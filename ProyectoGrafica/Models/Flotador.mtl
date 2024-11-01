@@ -1,0 +1,17 @@
+# 3ds Max Wavefront OBJ Exporter v0.99 - (c)2007 guruware
+# File Created: 30.10.2024 15:59:02
+
+newmtl flotador_Flotador_wire_135006006
+	Kd 0.5294 0.0235 0.0235
+	Ks 0.3500 0.3500 0.3500
+	Tr 0.0000
+	d 1.0000
+	Tf 1.0000 1.0000 1.0000
+	Pr 0.6800
+	Pm 0.0000
+	Pc 0.0000
+	Pcr 0.0000
+	Ni 1.5000
+	Ke 0.0000 0.0000 0.0000
+	illum 2
+	map_Kd flotador.jpg

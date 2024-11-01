@@ -124,7 +124,9 @@ int main( )
     Model areaAlberca((char*)"Models/AreaAlberca.obj");
     Model agua((char*)"Models/agua.obj");
     Model flotador((char*)"Models/flotador.obj");
-    
+    Model edificio((char*)"Models/EdificioPrincipal.obj");
+    Model cristales((char*)"Models/Cristales.obj");
+    Model suelo((char*)"Models/Plano.obj");
 
     // Set texture units
     lightingShader.Use();
@@ -211,6 +213,26 @@ int main( )
         glm::mat4 model(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
         
+        ////////////// PLANO DEL SUELO ///////////////
+        glm::mat4 modelSuelo(1);
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelSuelo));
+        suelo.Draw(lightingShader);
+
+
+        ////////////// EDIFICIO sin transparencia en ventanas y con mal texturizado en su suelo ///////////////
+        glm::mat4 modelEdificio(1);
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelEdificio));
+        edificio.Draw(lightingShader);
+
+        glm::mat4 modelCristales(1);
+        glEnable(GL_BLEND); //Activa la funcionalidad para trabajar en el canal alfa
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 1); //Se pone 1 para poder visualizar la transparencia 
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelCristales));
+        cristales.Draw(lightingShader);
+        glDisable(GL_BLEND);
+    
         //Modelo de area alberca
         glm::mat4 modelAlberca(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelAlberca));
@@ -234,6 +256,8 @@ int main( )
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelFlotador));
         flotador.Draw(lightingShader);
 
+
+    
         // Swap the buffers
         glfwSwapBuffers( window ); 
     }

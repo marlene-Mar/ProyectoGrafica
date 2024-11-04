@@ -16,7 +16,7 @@ void main()
 {
     // Movimiento sinusoidal del agua
     vec3 pos = aPos; // Copia la posición del vértice original
-    float wave = sin(time * 1.0 + pos.x * 2.0 + pos.z * 2.0) * 0.05;  // Movimiento sinusoidal en función del tiempo y posición
+    float wave = sin(time * 1.0 + pos.x * 3.0 + pos.z * 3.0) * 0.05;  // Movimiento sinusoidal en función del tiempo y posición
     pos.y += wave; // Movimiento vertical sinusoidal
     
     // Animar coordenadas de textura para efecto de flujo

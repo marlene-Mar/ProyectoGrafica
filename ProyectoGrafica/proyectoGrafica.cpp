@@ -165,8 +165,8 @@ int main( )
     // Setup and compile our shaders
     Shader shader( "Shader/modelLoading.vs", "Shader/modelLoading.frag" );
     Shader lightingShader("Shader/lighting.vs", "Shader/lighting.frag");
-    //Shader lampShader("Shader/lamp.vs", "Shader/lamp.frag");
     Shader AlbShader("Shader/shaderAgua.vs", "Shader/shaderAgua.frag");
+    Shader FlotShader("Shader/ShaderFlotador.vs", "Shader/ShaderFlotador.frag");
     
     
     // Load models
@@ -311,13 +311,12 @@ int main( )
         AlbShader.Use();
 
         // Get location objects for the matrices on the lamp shader (these could be different on a different shader)
-        modelLoc = glGetUniformLocation(AlbShader.Program, "model");
         viewLoc = glGetUniformLocation(AlbShader.Program, "view");
         projLoc = glGetUniformLocation(AlbShader.Program, "projection");
-        // Set matrices
+
+        // Pass the matrices to the shader
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
         //Modelo agua de la alberca
         glm::mat4 modelAgua(1);
@@ -330,10 +329,20 @@ int main( )
         agua.Draw(AlbShader);
         glDisable(GL_BLEND);
 
+        FlotShader.Use();
+
+        // Get location objects for the matrices on the lamp shader (these could be different on a different shader)
+        viewLoc = glGetUniformLocation(FlotShader.Program, "view");
+        projLoc = glGetUniformLocation(FlotShader.Program, "projection");
+
+        // Pass the matrices to the shader
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
         //Modelo del flotador
         glm::mat4 modelFlotador(1);
-        glUniformMatrix4fv(glGetUniformLocation(AlbShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelFlotador));
-        flotador.Draw(AlbShader);
+        glUniformMatrix4fv(glGetUniformLocation(FlotShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelFlotador));
+        flotador.Draw(FlotShader);
 
         // Swap the buffers
         glDeleteVertexArrays(1, &VAO);

@@ -53,6 +53,12 @@
     <None Include="Shader\shaderAgua.vs">
       <Filter>Archivos de origen\Shader</Filter>
     </None>
+    <None Include="Shader\ShaderFlotador.frag">
+      <Filter>Archivos de origen\Shader</Filter>
+    </None>
+    <None Include="Shader\ShaderFlotador.vs">
+      <Filter>Archivos de origen\Shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">

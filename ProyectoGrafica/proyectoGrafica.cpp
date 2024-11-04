@@ -1,10 +1,10 @@
-/* PROYECTO DE COMPUTACI覰 GR罠ICA E INTERACCI覰 HUMANO COMPUTADORA
+/* PROYECTO DE COMPUTACI脫N GR脕FICA E INTERACCI脫N HUMANO COMPUTADORA
 * SEMESTRE 2025-1 
 * EQUIPO 2 
 * INTEGRANTES: 
-* Azuara L髉ez Laura Paola 
+* Azuara L贸pez Laura Paola 
 * De la Cruz Padilla Marlene Mariana 
-* Dom韓guez Reyes Cynthia Berenice
+* Dom铆nguez Reyes Cynthia Berenice
 */
 
 // Std. Includes
@@ -51,9 +51,9 @@ bool firstMouse = true;
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
-//////////////////ANIMACI覰 ALBERCA////////////////
+//////////////////ANIMACI脫N ALBERCA////////////////
 
-float tiempo; //Variable para caluclar el tiempo de animaci髇
+float tiempo; //Variable para caluclar el tiempo de animaci贸n
 bool dir = true; //Varirble para verificar el cambio en tiempo
 
 //////////////////////////////////////////////////
@@ -120,9 +120,9 @@ int main( )
     Shader shader( "Shader/modelLoading.vs", "Shader/modelLoading.frag" );
     Shader lightingShader("Shader/lighting.vs", "Shader/lighting.frag");
 
-    //////////////////ANIMACI覰 ALBERCA////////////////
+    //////////////////ANIMACI脫N ALBERCA////////////////
 
-    //Sheaders de control de animaci髇 para el agua y el flotador 
+    //Sheaders de control de animaci贸n para el agua y el flotador 
     Shader AlbShader("Shader/shaderAgua.vs", "Shader/shaderAgua.frag");
     Shader FlotShader("Shader/ShaderFlotador.vs", "Shader/ShaderFlotador.frag");
 
@@ -132,6 +132,10 @@ int main( )
     Model areaAlberca((char*)"Models/AreaAlberca.obj");
     Model agua((char*)"Models/agua.obj");
     Model flotador((char*)"Models/flotador.obj");
+    Model edificio((char*)"Models/EdificioPrincipal.obj");
+    Model cristales((char*)"Models/Cristales.obj");
+    Model suelo((char*)"Models/Plano.obj");
+
     
     // First, set the container's VAO (and VBO)
     GLuint VBO, VAO;
@@ -146,6 +150,7 @@ int main( )
     // normal attribute
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
 
     // Set texture units
     lightingShader.Use();
@@ -164,12 +169,12 @@ int main( )
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        //////////////////ANIMACI覰 ALBERCA////////////////
+        //////////////////ANIMACI脫N ALBERCA////////////////
 
-        if (dir) { //Si existe un cambio de la direcci髇 del tiempo
+        if (dir) { //Si existe un cambio de la direcci贸n del tiempo
             tiempo += deltaTime; //Se incrementa el tiempo con deltaTime
-            if (tiempo >= 14.0f) {  // Limite del valor m醲imo del tiempo
-                tiempo = 14.0f; //Tiempo m醲imo = 14
+            if (tiempo >= 14.0f) {  // Limite del valor m谩ximo del tiempo
+                tiempo = 14.0f; //Tiempo m谩ximo = 14
                 dir = false; //Cambia el valor de dir 
             }
         }
@@ -256,12 +261,32 @@ int main( )
         glm::mat4 model(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
         
+        ////////////// PLANO DEL SUELO ///////////////
+        glm::mat4 modelSuelo(1);
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelSuelo));
+        suelo.Draw(lightingShader);
+
+
+        ////////////// EDIFICIO sin transparencia en ventanas y con mal texturizado en su suelo ///////////////
+        glm::mat4 modelEdificio(1);
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelEdificio));
+        edificio.Draw(lightingShader);
+
+        glm::mat4 modelCristales(1);
+        glEnable(GL_BLEND); //Activa la funcionalidad para trabajar en el canal alfa
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 1); //Se pone 1 para poder visualizar la transparencia 
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelCristales));
+        cristales.Draw(lightingShader);
+        glDisable(GL_BLEND);
+    
         //Modelo de area alberca
         glm::mat4 modelAlberca(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelAlberca));
         areaAlberca.Draw(lightingShader);
      
-        //////////////////ANIMACI覰 ALBERCA////////////////
+        //////////////////ANIMACI脫N ALBERCA////////////////
 
         AlbShader.Use(); //Llama al shader de shaderAgua
 
@@ -300,8 +325,9 @@ int main( )
         glUniform1f(glGetUniformLocation(FlotShader.Program, "time"), tiempo); //Se envia el valor de tiempo al shader
         flotador.Draw(FlotShader);
 
+
         ///////////////////////////////////////////////////
-        
+      
         // Swap the buffers
         glDeleteVertexArrays(1, &VAO);
         glfwSwapBuffers( window ); 

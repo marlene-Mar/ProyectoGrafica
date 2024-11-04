@@ -10,26 +10,26 @@ out vec2 TexCoords;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
-uniform float time;
+uniform float time; //Tiempo para animar el movimeinto
 
 void main()
 {
     // Movimiento sinusoidal del agua
-    vec3 pos = aPos;
-    float wave = sin(time * 1.0 + pos.x * 2.0 + pos.z * 2.0) * 0.05;
-    pos.y += wave;
+    vec3 pos = aPos; // Copia la posición del vértice original
+    float wave = sin(time * 1.0 + pos.x * 2.0 + pos.z * 2.0) * 0.05;  // Movimiento sinusoidal en función del tiempo y posición
+    pos.y += wave; // Movimiento vertical sinusoidal
     
     // Animar coordenadas de textura para efecto de flujo
     TexCoords = aTexCoords;
+
     // Desplazamiento de textura basado en el tiempo
     TexCoords.x += time * 0.05;
     TexCoords.y += time * 0.03;
     
     // Actualizar normal basada en la onda
-    Normal = normalize(aNormal + vec3(0.0, wave, 0.0));
+    Normal = normalize(aNormal + vec3(0.0, wave, 0.0)); // Ajuste de la normal basado en el desplazamiento de onda
     
-    FragPos = vec3(model * vec4(pos, 1.0));
-    Normal = mat3(transpose(inverse(model))) * Normal;
-    
-    gl_Position = projection * view * model * vec4(pos, 1.0);
+    FragPos = vec3(model * vec4(pos, 1.0)); // Transformar la posición a espacio de mundo
+    Normal = mat3(transpose(inverse(model))) * Normal; // Transformar la normal a espacio de mundo
+    gl_Position = projection * view * model * vec4(pos, 1.0); // Calcular la posición final del vértice en espacio de pantalla
 }

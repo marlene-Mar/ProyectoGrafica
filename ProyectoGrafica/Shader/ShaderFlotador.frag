@@ -6,7 +6,7 @@ in vec3 Normal;
 in vec2 TexCoords;
 
 uniform sampler2D diffuseTexture;
-uniform float time;
+uniform float time; //Tiempo para animar el movimeinto
 
 void main()
 {
@@ -29,7 +29,9 @@ void main()
     vec3 diffuse = texColor.rgb * diff * 0.7;
     vec3 specular = vec3(0.3) * spec;
     
+    // Color final del fragmento sumando todos los componentes de iluminación
     vec3 finalColor = ambient + diffuse + specular;
     
+    // Asignar el color final al fragmento con un canal alfa
     FragColor = vec4(finalColor, 1.0);
 }

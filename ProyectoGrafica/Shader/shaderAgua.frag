@@ -6,8 +6,8 @@ in vec3 Normal;
 in vec2 TexCoords;
 
 uniform sampler2D diffuseTexture; // Textura del agua
-uniform float time;
-uniform bool transparency;
+uniform float time; //Tiempo para animar el movimeinto
+uniform bool transparency; // Variable de control para activar o desactivar transparencia
 
 void main()
 {
@@ -41,5 +41,6 @@ void main()
     // Aplicar transparencia
     float alpha = transparency ? 0.8 : 1.0;
     
+    // Asignar el color final al fragmento con el valor de alfa para la transparencia
     FragColor = vec4(finalColor, alpha);
 }

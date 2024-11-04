@@ -51,14 +51,12 @@ bool firstMouse = true;
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
-//Var animación agua
-bool active;
-float speed = 5.0f;
-float tiempo;
-float tiempo2;
-bool dir = true;
-GLfloat tiempoInicio = 0.0f;
-double ultCambio = glfwGetTime();
+//////////////////ANIMACIÓN ALBERCA////////////////
+
+float tiempo; //Variable para caluclar el tiempo de animación
+bool dir = true; //Varirble para verificar el cambio en tiempo
+
+//////////////////////////////////////////////////
 
 // Positions of the point lights
 glm::vec3 pointLightPositions[] = {
@@ -68,50 +66,6 @@ glm::vec3 pointLightPositions[] = {
     glm::vec3(0.0f,0.0f, 0.0f)
 };
 
-
-float vertices[] = {
-     -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-       -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-       -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-
-       -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-        0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-       -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-       -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-
-       -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-       -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-       -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-       -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-       -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-       -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-       -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-       -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-       -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-       -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-       -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-       -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-};
 
 glm::vec3 Light1 = glm::vec3(0);
 
@@ -165,23 +119,27 @@ int main( )
     // Setup and compile our shaders
     Shader shader( "Shader/modelLoading.vs", "Shader/modelLoading.frag" );
     Shader lightingShader("Shader/lighting.vs", "Shader/lighting.frag");
+
+    //////////////////ANIMACIÓN ALBERCA////////////////
+
+    //Sheaders de control de animación para el agua y el flotador 
     Shader AlbShader("Shader/shaderAgua.vs", "Shader/shaderAgua.frag");
     Shader FlotShader("Shader/ShaderFlotador.vs", "Shader/ShaderFlotador.frag");
-    
+
+    ///////////////////////////////////////////////////
     
     // Load models
     Model areaAlberca((char*)"Models/AreaAlberca.obj");
     Model agua((char*)"Models/agua.obj");
     Model flotador((char*)"Models/flotador.obj");
     
-    ///////////Animación agua////////////
     // First, set the container's VAO (and VBO)
     GLuint VBO, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
     // Position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
@@ -194,12 +152,6 @@ int main( )
     glUniform1i(glGetUniformLocation(lightingShader.Program, "Material.diffuse"), 0);
     glUniform1i(glGetUniformLocation(lightingShader.Program, "Material.specular"), 1);
 
-    AlbShader.Use();
-    GLint timeLocation = glGetUniformLocation(AlbShader.Program, "time");
-    if (timeLocation == -1) {
-        std::cout << "Warning: Could not find 'time' uniform in shader" << std::endl;
-    }
-
     glm::mat4 projection = glm::perspective( camera.GetZoom( ), ( float )SCREEN_WIDTH/( float )SCREEN_HEIGHT, 0.1f, 100.0f );
     
   
@@ -211,23 +163,25 @@ int main( )
         GLfloat currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        GLfloat elapsedTime = 0.0f;
 
-        if (dir) {
-            tiempo += deltaTime;
-            if (tiempo >= 14.0f) {
-                tiempo = 14.0f;
-                dir = false;
+        //////////////////ANIMACIÓN ALBERCA////////////////
+
+        if (dir) { //Si existe un cambio de la dirección del tiempo
+            tiempo += deltaTime; //Se incrementa el tiempo con deltaTime
+            if (tiempo >= 14.0f) {  // Limite del valor máximo del tiempo
+                tiempo = 14.0f; //Tiempo máximo = 14
+                dir = false; //Cambia el valor de dir 
             }
         }
-        else {
-            tiempo -= deltaTime;
-            if (tiempo <= -14.0f) {
-                tiempo = -14.0f;
-                dir = true;
+        else { //Disminuye el tiempo
+            tiempo -= deltaTime; //Se reduce el tiempo con deltaTime
+            if (tiempo <= -14.0f) { // Limite del valor minimo del tiempo
+                tiempo = -14.0f; //Tiempo minimo = -14
+                dir = true; //Cambia el valor de dir
             }
         }
 
+        ///////////////////////////////////////////////////
 
         // Check and call events
         glfwPollEvents();
@@ -307,8 +261,9 @@ int main( )
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelAlberca));
         areaAlberca.Draw(lightingShader);
      
-        //ALBERCA
-        AlbShader.Use();
+        //////////////////ANIMACIÓN ALBERCA////////////////
+
+        AlbShader.Use(); //Llama al shader de shaderAgua
 
         // Get location objects for the matrices on the lamp shader (these could be different on a different shader)
         viewLoc = glGetUniformLocation(AlbShader.Program, "view");
@@ -325,11 +280,11 @@ int main( )
         //glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelAgua));
         glUniform1i(glGetUniformLocation(AlbShader.Program, "transparency"), 1); //Se pone 1 para poder visualizar la transparencia 
         glUniformMatrix4fv(glGetUniformLocation(AlbShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelAgua));
-        glUniform1f(glGetUniformLocation(AlbShader.Program, "time"), tiempo);
+        glUniform1f(glGetUniformLocation(AlbShader.Program, "time"), tiempo); //Se envia el valor de tiempo al shader
         agua.Draw(AlbShader);
         glDisable(GL_BLEND);
 
-        FlotShader.Use();
+        FlotShader.Use(); // Llama al shader de ShaderFlotador
 
         // Get location objects for the matrices on the lamp shader (these could be different on a different shader)
         viewLoc = glGetUniformLocation(FlotShader.Program, "view");
@@ -342,8 +297,11 @@ int main( )
         //Modelo del flotador
         glm::mat4 modelFlotador(1);
         glUniformMatrix4fv(glGetUniformLocation(FlotShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelFlotador));
+        glUniform1f(glGetUniformLocation(FlotShader.Program, "time"), tiempo); //Se envia el valor de tiempo al shader
         flotador.Draw(FlotShader);
 
+        ///////////////////////////////////////////////////
+        
         // Swap the buffers
         glDeleteVertexArrays(1, &VAO);
         glfwSwapBuffers( window ); 

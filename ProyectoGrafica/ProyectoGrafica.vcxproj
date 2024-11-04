@@ -152,6 +152,8 @@
     <None Include="Shader\modelLoading.vs" />
     <None Include="Shader\shaderAgua.frag" />
     <None Include="Shader\shaderAgua.vs" />
+    <None Include="Shader\ShaderFlotador.frag" />
+    <None Include="Shader\ShaderFlotador.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />

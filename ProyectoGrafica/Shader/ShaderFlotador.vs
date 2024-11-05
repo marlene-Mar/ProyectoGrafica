@@ -16,7 +16,7 @@ void main()
 {
     // Movimiento sinusoidal del flotador
     vec3 pos = aPos; // Copia la posición del vértice original
-    float flot = sin(time * 1.0 + pos.x * 2.0 + pos.z * 2.0) * 0.05; // Movimiento sinusoidal en función del tiempo y posición
+    float flot = sin(time * 1.0 + pos.x * 3.0 + pos.z * 3.0) * 0.05; // Movimiento sinusoidal en función del tiempo y posición
     pos.y += flot;  // Movimiento vertical sinusoidal
 
     //Desplazamiento lineal en z

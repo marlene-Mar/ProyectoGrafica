@@ -135,6 +135,8 @@ int main( )
     Model edificio((char*)"Models/EdificioPrincipal.obj");
     Model cristales((char*)"Models/Cristales.obj");
     Model suelo((char*)"Models/Plano.obj");
+    Model areaJuegos((char*)"Models/areaJuegos.obj");
+
 
     
     // First, set the container's VAO (and VBO)
@@ -285,7 +287,18 @@ int main( )
         glm::mat4 modelAlberca(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelAlberca));
         areaAlberca.Draw(lightingShader);
+
+
+       /////////////////////Modelo de area juegos////////////////
+        glm::mat4 modelJuegos(1);
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelAlberca));
+        areaJuegos.Draw(lightingShader);
      
+
+        ////////////////////Modelo columpio1////////////////
+        
+
+  
         //////////////////ANIMACIÓN ALBERCA////////////////
 
         AlbShader.Use(); //Llama al shader de shaderAgua

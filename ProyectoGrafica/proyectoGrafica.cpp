@@ -291,7 +291,8 @@ int main( )
 
        /////////////////////Modelo de area juegos////////////////
        
-        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelAlberca));
+        glm::mat4 modelJuegos(1);
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelJuegos));
         areaJuegos.Draw(lightingShader);
      
 
@@ -299,13 +300,16 @@ int main( )
 
 
 
-        /////// 
-        glm::mat4 modelJuegos(1);
-        model = glm::translate(model, glm::vec3(12.433f, 0.0f, -9.896f));
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        ////////////////////////ÁREA SPA/////////////////////////
+        glm::mat4 modelSpa(1);
+        modelSpa = glm::translate(model, glm::vec3(12.433f, 0.0f, -9.896f));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelSpa));
         spa.Draw(lightingShader);
 
   
+        ////////////////////////////////////////////////////////////
+        
+
         //////////////////ANIMACIÓN ALBERCA////////////////
 
         AlbShader.Use(); //Llama al shader de shaderAgua

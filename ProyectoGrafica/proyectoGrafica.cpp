@@ -132,11 +132,18 @@ int main( )
     Model areaAlberca((char*)"Models/AreaAlberca.obj");
     Model agua((char*)"Models/agua.obj");
     Model flotador((char*)"Models/flotador.obj");
+    //Edificio
     Model edificio((char*)"Models/EdificioPrincipal.obj");
     Model cristales((char*)"Models/Cristales.obj");
     Model suelo((char*)"Models/Plano.obj");
+    //Juegos
     Model areaJuegos((char*)"Models/areaJuegos.obj");
+    //SPA
     Model spa((char*)"Models/areaSpa/spaCompleto2.obj"); 
+    //GYM
+    Model GYM((char*)"Models/gym.obj");
+    Model cristalesGYM((char*)"Models/CristalesGYM.obj");
+    Model GYMElements((char*)"Models/gymElementos.obj");
     Model pelota((char*)"Models/areaGYM/ball.obj");
 
     
@@ -297,10 +304,31 @@ int main( )
         areaJuegos.Draw(lightingShader);
      
 
+        ////////////////////////GYM/////////////////////////////////
+        glm::mat4 modelGYM(1);
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelGYM));
+        GYM.Draw(lightingShader);
+
+        glm::mat4 modelGYME(1);
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelGYME));
+        GYMElements.Draw(lightingShader);
+
         ////////////////////Modelo pelota////////////////
         glm::mat4 modelPelota(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelPelota));
         pelota.Draw(lightingShader);
+
+        glm::mat4 modelCrisGYM(1);
+        glEnable(GL_BLEND); //Activa la funcionalidad para trabajar en el canal alfa
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 1); //Se pone 1 para poder visualizar la transparencia 
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelCrisGYM));
+        cristalesGYM.Draw(lightingShader);
+        glDisable(GL_BLEND);
+
+        ////////////////////////////////////////////////////////////
+        
 
 
         ////////////////////////ÁREA SPA/////////////////////////

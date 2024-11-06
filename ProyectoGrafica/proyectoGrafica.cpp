@@ -136,7 +136,7 @@ int main( )
     Model cristales((char*)"Models/Cristales.obj");
     Model suelo((char*)"Models/Plano.obj");
     Model areaJuegos((char*)"Models/areaJuegos.obj");
-
+    Model spa((char*)"Models/areaSpa/spaCompleto2.obj"); 
 
     
     // First, set the container's VAO (and VBO)
@@ -290,13 +290,20 @@ int main( )
 
 
        /////////////////////Modelo de area juegos////////////////
-        glm::mat4 modelJuegos(1);
+       
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelAlberca));
         areaJuegos.Draw(lightingShader);
      
 
         ////////////////////Modelo columpio1////////////////
-        
+
+
+
+        /////// 
+        glm::mat4 modelJuegos(1);
+        model = glm::translate(model, glm::vec3(12.433f, 0.0f, -9.896f));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        spa.Draw(lightingShader);
 
   
         //////////////////ANIMACIÓN ALBERCA////////////////

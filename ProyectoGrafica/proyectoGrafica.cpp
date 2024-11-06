@@ -148,9 +148,9 @@ int main( )
     //SPA
     Model spa((char*)"Models/areaSpa/spaCompleto2.obj"); 
     //GYM
-    /*Model GYM((char*)"Models/gym.obj");*/
+    Model GYM((char*)"Models/gym.obj");
     Model cristalesGYM((char*)"Models/CristalesGYM.obj");
-    Model GYMElements((char*)"Models/areaGYM/cuartoGym.obj");
+    Model GYMElements((char*)"Models/gymElementos.obj");
     Model pelota((char*)"Models/areaGYM/ball.obj");
 
     
@@ -318,9 +318,9 @@ int main( )
         columpio.Draw(lightingShader);
 
         ////////////////////////GYM/////////////////////////////////
-     /*   glm::mat4 modelGYM(1);
+        glm::mat4 modelGYM(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelGYM));
-        GYM.Draw(lightingShader);*/
+        GYM.Draw(lightingShader);
 
         glm::mat4 modelGYME(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelGYME));

@@ -137,6 +137,7 @@ int main( )
     Model suelo((char*)"Models/Plano.obj");
     Model areaJuegos((char*)"Models/areaJuegos.obj");
     Model spa((char*)"Models/areaSpa/spaCompleto2.obj"); 
+    Model pelota((char*)"Models/areaGYM/ball.obj");
 
     
     // First, set the container's VAO (and VBO)
@@ -296,8 +297,10 @@ int main( )
         areaJuegos.Draw(lightingShader);
      
 
-        ////////////////////Modelo columpio1////////////////
-
+        ////////////////////Modelo pelota////////////////
+        glm::mat4 modelPelota(1);
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelPelota));
+        pelota.Draw(lightingShader);
 
 
         ////////////////////////ÁREA SPA/////////////////////////

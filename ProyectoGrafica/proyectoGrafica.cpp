@@ -40,6 +40,7 @@ int SCREEN_WIDTH, SCREEN_HEIGHT;
 void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mode );
 void MouseCallback( GLFWwindow *window, double xPos, double yPos );
 void DoMovement( );
+void UpdateBallAnimation(); // Nueva función para la animación de la pelota
 
 
 // Camera
@@ -68,6 +69,11 @@ glm::vec3 pointLightPositions[] = {
 
 
 glm::vec3 Light1 = glm::vec3(0);
+
+////////////////7/ Variables para la animación de la pelota//////////////////
+glm::vec3 pelotaPos = glm::vec3(0.0f, 1.5f, 0.0f); // Posición inicial
+float tiempoAnimacion = 0.0f; // Tiempo para la animación
+bool animacionActiva = false; // Control de la animación
 
 int main( )
 {
@@ -142,9 +148,9 @@ int main( )
     //SPA
     Model spa((char*)"Models/areaSpa/spaCompleto2.obj"); 
     //GYM
-    Model GYM((char*)"Models/gym.obj");
+    /*Model GYM((char*)"Models/gym.obj");*/
     Model cristalesGYM((char*)"Models/CristalesGYM.obj");
-    Model GYMElements((char*)"Models/gymElementos.obj");
+    Model GYMElements((char*)"Models/areaGYM/cuartoGym.obj");
     Model pelota((char*)"Models/areaGYM/ball.obj");
 
     
@@ -202,6 +208,9 @@ int main( )
         // Check and call events
         glfwPollEvents();
         DoMovement();
+
+        ///////////////////// Actualizar la posición de la pelota
+        UpdateBallAnimation();
 
         // Clear the colorbuffer
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
@@ -309,9 +318,9 @@ int main( )
         columpio.Draw(lightingShader);
 
         ////////////////////////GYM/////////////////////////////////
-        glm::mat4 modelGYM(1);
+     /*   glm::mat4 modelGYM(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelGYM));
-        GYM.Draw(lightingShader);
+        GYM.Draw(lightingShader);*/
 
         glm::mat4 modelGYME(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelGYME));
@@ -319,6 +328,7 @@ int main( )
 
         ////////////////////Modelo pelota////////////////
         glm::mat4 modelPelota(1);
+        modelPelota = glm::translate(model, pelotaPos);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelPelota));
         pelota.Draw(lightingShader);
 
@@ -424,12 +434,30 @@ void DoMovement( )
    
 }
 
+void UpdateBallAnimation()
+{
+    if (animacionActiva)
+    {
+        tiempoAnimacion += deltaTime; // Incrementar el tiempo de animación
+        float altura = abs(cos(tiempoAnimacion) * exp(-0.1f * tiempoAnimacion)); // Función cosenoidal para la altura
+        pelotaPos.y = altura * 1.5f; // Ajustar la altura de la pelota
+
+        // Movimiento en el eje X con decaimiento exponencial
+        float desplazamientoX = sin(tiempoAnimacion) * exp(-0.1f * tiempoAnimacion) * 1.0f; // Función seno con decaimiento
+        pelotaPos.x = desplazamientoX; // Ajustar la posición en X de la pelota
+    }
+}
+
 // Is called whenever a key is pressed/released via GLFW
 void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mode )
 {
     if ( GLFW_KEY_ESCAPE == key && GLFW_PRESS == action )
     {
         glfwSetWindowShouldClose(window, GL_TRUE);
+    }
+    if (key == GLFW_KEY_R)
+    {
+        animacionActiva = true;
     }
     
     if ( key >= 0 && key < 1024 )

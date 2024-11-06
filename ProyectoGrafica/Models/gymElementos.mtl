@@ -1,5 +1,5 @@
 # 3ds Max Wavefront OBJ Exporter v0.99 - (c)2007 guruware
-# File Created: 06.11.2024 02:31:38
+# File Created: 06.11.2024 14:45:45
 
 newmtl Material__7904
 	Ns 10.0000
@@ -26,8 +26,8 @@ newmtl Material__3719
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka gray-empty-blur-template-circle.jpg
-	map_Kd gray-empty-blur-template-circle.jpg
+	map_Ka gris1.jpg
+	map_Kd gris1.jpg
 
 newmtl cuartoGym_cuartoGym_blinn10SG
 	Kd 0.0000 0.0000 0.0000
@@ -42,7 +42,7 @@ newmtl cuartoGym_cuartoGym_blinn10SG
 	Ni 1.5000
 	Ke 0.0000 0.0000 0.0000
 	illum 2
-	map_Kd negro.jpg
+	map_Kd gris1.jpg
 
 newmtl Material__7903
 	Ns 10.0000
@@ -84,7 +84,7 @@ newmtl Material__28
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
 	map_Ka metal.jpg
-	map_Kd metal.jpg
+	map_Kd \metal.jpg
 
 newmtl Material__3673
 	Ns 10.0000
@@ -100,7 +100,7 @@ newmtl Material__3673
 	map_Ka madera_puerta.jpg
 	map_Kd madera_puerta.jpg
 
-newmtl Material__8093
+newmtl Material__8159
 	Ns 10.0000
 	Ni 1.5000
 	d 1.0000
@@ -111,5 +111,5 @@ newmtl Material__8093
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka negro.jpg
-	map_Kd negro.jpg
+	map_Ka gris1.jpg
+	map_Kd gris1.jpg

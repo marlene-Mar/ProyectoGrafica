@@ -138,6 +138,7 @@ int main( )
     Model suelo((char*)"Models/Plano.obj");
     //Juegos
     Model areaJuegos((char*)"Models/areaJuegos.obj");
+    Model columpio((char*)"Models/Columpios.obj");
     //SPA
     Model spa((char*)"Models/areaSpa/spaCompleto2.obj"); 
     //GYM
@@ -303,6 +304,9 @@ int main( )
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelJuegos));
         areaJuegos.Draw(lightingShader);
      
+        glm::mat4 modelColumpio(1);
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelColumpio));
+        columpio.Draw(lightingShader);
 
         ////////////////////////GYM/////////////////////////////////
         glm::mat4 modelGYM(1);

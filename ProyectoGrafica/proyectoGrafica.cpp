@@ -142,6 +142,9 @@ int main( )
     Model edificio((char*)"Models/EdificioPrincipal.obj");
     Model cristales((char*)"Models/Cristales.obj");
     Model suelo((char*)"Models/Plano.obj");
+    SpaArea
+    Model spa((char*)"Models/areaSpa/spaCompleto3.obj");
+
     //Juegos
     Model areaJuegos((char*)"Models/areaJuegos.obj");
     Model columpio((char*)"Models/Columpios.obj");
@@ -152,6 +155,7 @@ int main( )
     Model cristalesGYM((char*)"Models/CristalesGYM.obj");
     Model GYMElements((char*)"Models/gymElementos.obj");
     Model pelota((char*)"Models/areaGYM/ball.obj");
+     main
 
     
     // First, set the container's VAO (and VBO)
@@ -306,12 +310,23 @@ int main( )
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelAlberca));
         areaAlberca.Draw(lightingShader);
 
+         SpaArea
+        /////// Modelo areaSpa ////////////////
+        glm::mat4 modelSpa(1);
+        //glEnable(GL_BLEND); //Activa la funcionalidad para trabajar en el canal alfa
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        model = glm::translate(model, glm::vec3(12.433f, 0.3f, -9.0f));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        //glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 1); //Se pone 1 para poder visualizar la transparencia 
+        spa.Draw(lightingShader);
+
 
        /////////////////////Modelo de area juegos////////////////
        
         glm::mat4 modelJuegos(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelJuegos));
         areaJuegos.Draw(lightingShader);
+         main
      
         glm::mat4 modelColumpio(1);
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelColumpio));

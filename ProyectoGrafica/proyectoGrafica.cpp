@@ -40,7 +40,7 @@ int SCREEN_WIDTH, SCREEN_HEIGHT;
 void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mode );
 void MouseCallback( GLFWwindow *window, double xPos, double yPos );
 void DoMovement( );
-void UpdateBallAnimation(); // Nueva función para la animación de la pelota
+void BallAnimation(); // Nueva función para la animación de la pelota
 
 
 // Camera
@@ -210,7 +210,7 @@ int main( )
         DoMovement();
 
         ///////////////////// Actualizar la posición de la pelota
-        UpdateBallAnimation();
+        BallAnimation();
 
         // Clear the colorbuffer
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
@@ -434,7 +434,7 @@ void DoMovement( )
    
 }
 
-void UpdateBallAnimation()
+void BallAnimation()
 {
     if (animacionActiva)
     {

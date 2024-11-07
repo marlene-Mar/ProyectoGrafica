@@ -150,6 +150,22 @@ int main()
     Model cristales((char*)"Models/Cristales.obj");
     Model suelo((char*)"Models/Plano.obj");
 
+    //SpaArea
+    //Model spa1((char*)"Models/areaSpa/spaPT1.obj");
+    Model spa((char*)"Models/areaSpa/SpaCompleto.obj");
+    Model spaM((char*)"Models/areaSpa/MuroSPA.obj");
+    Model spaP((char*)"Models/areaSpa/pisoSPA.obj");
+    Model Cristalspa((char*)"Models/areaSpa/CristalSPA.obj");
+
+    //Juegos
+    Model areaJuegos((char*)"Models/areaJuegos.obj");
+    Model columpio((char*)"Models/Columpios.obj");
+
+    //GYM
+    Model GYM((char*)"Models/gym.obj");
+    Model cristalesGYM((char*)"Models/CristalesGYM.obj");
+    Model GYMElements((char*)"Models/gymElementos.obj");
+    Model pelota((char*)"Models/areaGYM/ball.obj");
 
 
     /////////////////////////// Vertices para el skybox ////////////////////////////
@@ -213,21 +229,6 @@ int main()
     };
 
     ///////////////////////////////////////////////////////////////////////////////
-
-
-    //SpaArea
-    Model spa((char*)"Models/areaSpa/spaCompleto3.obj");
-
-    //Juegos
-    Model areaJuegos((char*)"Models/areaJuegos.obj");
-    Model columpio((char*)"Models/Columpios.obj");
-
-    //GYM
-    Model GYM((char*)"Models/gym.obj");
-    Model cristalesGYM((char*)"Models/CristalesGYM.obj");
-    Model GYMElements((char*)"Models/gymElementos.obj");
-    Model pelota((char*)"Models/areaGYM/ball.obj");
-
 
 
     
@@ -457,15 +458,30 @@ int main()
 
         ////////////////////////ÁREA SPA/////////////////////////
 
-        glm::mat4 modelSpa(1);
-        //glEnable(GL_BLEND); //Activa la funcionalidad para trabajar en el canal alfa
+        //Estructura SPA
+        /*glm::mat4 modelSpa(1);
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelSpa));
+        spa.Draw(lightingShader);*/
+
+        //Estructura SPA - Muro
+        glm::mat4 modelMuroSpa(1);
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelMuroSpa));
+        spaM.Draw(lightingShader);
+
+        //Estructura SPA - Piso
+        glm::mat4 modelPisoSpa(1);
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelPisoSpa));
+        spaP.Draw(lightingShader);
+
+        //Cristales del SPA
+        glm::mat4 modelCrisSPA(1);
+        glEnable(GL_BLEND); //Activa la funcionalidad para trabajar en el canal alfa
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        model = glm::translate(model, glm::vec3(12.433f, 0.3f, -9.0f));
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        //glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 1); //Se pone 1 para poder visualizar la transparencia 
-        spa.Draw(lightingShader);
-
-
+        glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 1); //Se pone 1 para poder visualizar la transparencia 
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelCrisSPA));
+        Cristalspa.Draw(lightingShader);
+        glDisable(GL_BLEND);
   
         ////////////////////////////////////////////////////////////
         
@@ -615,10 +631,10 @@ void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mod
             keys[key] = false;
         }
     }
-
  
 
- 
+
+
 }
 
 void MouseCallback( GLFWwindow *window, double xPos, double yPos )

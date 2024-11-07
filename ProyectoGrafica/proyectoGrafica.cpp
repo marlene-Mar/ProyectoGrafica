@@ -459,9 +459,9 @@ int main()
         ////////////////////////ÁREA SPA/////////////////////////
 
         //Estructura SPA
-        glm::mat4 modelSpa(1);
+        /*glm::mat4 modelSpa(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelSpa));
-        spa.Draw(lightingShader);
+        spa.Draw(lightingShader);*/
 
         //Estructura SPA - Muro
         glm::mat4 modelMuroSpa(1);

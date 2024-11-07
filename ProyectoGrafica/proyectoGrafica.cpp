@@ -135,6 +135,7 @@ int main( )
     Model edificio((char*)"Models/EdificioPrincipal.obj");
     Model cristales((char*)"Models/Cristales.obj");
     Model suelo((char*)"Models/Plano.obj");
+    Model spa((char*)"Models/areaSpa/spaCompleto3.obj");
 
     
     // First, set the container's VAO (and VBO)
@@ -285,6 +286,15 @@ int main( )
         glm::mat4 modelAlberca(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelAlberca));
         areaAlberca.Draw(lightingShader);
+
+        /////// Modelo areaSpa ////////////////
+        glm::mat4 modelSpa(1);
+        //glEnable(GL_BLEND); //Activa la funcionalidad para trabajar en el canal alfa
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        model = glm::translate(model, glm::vec3(12.433f, 0.3f, -9.0f));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        //glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 1); //Se pone 1 para poder visualizar la transparencia 
+        spa.Draw(lightingShader);
      
         //////////////////ANIMACIÓN ALBERCA////////////////
 

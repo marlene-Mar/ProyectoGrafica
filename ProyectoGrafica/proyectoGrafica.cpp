@@ -78,55 +78,55 @@ glm::vec3 pelotaPos = glm::vec3(-3.5f, 1.0f, -2.0f); // Posición inicial
 float tiempoAnimacion = 0.0f; // Tiempo para la animación
 bool animacionActiva = false; // Control de la animación
 
-int main( )
+int main()
 {
     // Init GLFW
-    glfwInit( );
+    glfwInit();
     // Set all the required options for GLFW
-    glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
-    glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 3 );
-    glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
-    glfwWindowHint( GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE );
-    glfwWindowHint( GLFW_RESIZABLE, GL_FALSE );
-    
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+
     // Create a GLFWwindow object that we can use for GLFW's functions
-    GLFWwindow *window = glfwCreateWindow( WIDTH, HEIGHT, "Proyecto Grafica - Hotel OASIS DEL SOL", nullptr, nullptr );
-    
-    if ( nullptr == window )
+    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Proyecto Grafica - Hotel OASIS DEL SOL", nullptr, nullptr);
+
+    if (nullptr == window)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate( );
-        
+        glfwTerminate();
+
         return EXIT_FAILURE;
     }
-    
-    glfwMakeContextCurrent( window );
-    glfwGetFramebufferSize( window, &SCREEN_WIDTH, &SCREEN_HEIGHT );
-    
+
+    glfwMakeContextCurrent(window);
+    glfwGetFramebufferSize(window, &SCREEN_WIDTH, &SCREEN_HEIGHT);
+
     // Set the required callback functions
-    glfwSetKeyCallback( window, KeyCallback );
-    glfwSetCursorPosCallback( window, MouseCallback );
-    
+    glfwSetKeyCallback(window, KeyCallback);
+    glfwSetCursorPosCallback(window, MouseCallback);
+
     // GLFW Options
     //glfwSetInputMode( window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
-    
+
     // Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
     glewExperimental = GL_TRUE;
     // Initialize GLEW to setup the OpenGL Function pointers
-    if ( GLEW_OK != glewInit( ) )
+    if (GLEW_OK != glewInit())
     {
         std::cout << "Failed to initialize GLEW" << std::endl;
         return EXIT_FAILURE;
     }
-    
+
     // Define the viewport dimensions
-    glViewport( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT );
-    
+    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
     // OpenGL options
-    glEnable( GL_DEPTH_TEST );
-    
+    glEnable(GL_DEPTH_TEST);
+
     // Setup and compile our shaders
-    Shader shader( "Shader/modelLoading.vs", "Shader/modelLoading.frag" );
+    Shader shader("Shader/modelLoading.vs", "Shader/modelLoading.frag");
     Shader lightingShader("Shader/lighting.vs", "Shader/lighting.frag");
 
     //////////////////ANIMACIÓN ALBERCA////////////////
@@ -139,7 +139,7 @@ int main( )
 
     ////////////////// Shader para el skybox ///////////////////////////
     Shader skyboxShader("Shader/SkyBox.vs", "Shader/SkyBox.frag");
-    
+
     // Load models
     Model areaAlberca((char*)"Models/AreaAlberca.obj");
     Model agua((char*)"Models/agua.obj");
@@ -150,7 +150,7 @@ int main( )
     Model cristales((char*)"Models/Cristales.obj");
     Model suelo((char*)"Models/Plano.obj");
 
- Adicionales
+
 
     /////////////////////////// Vertices para el skybox ////////////////////////////
 
@@ -227,7 +227,7 @@ int main( )
     Model cristalesGYM((char*)"Models/CristalesGYM.obj");
     Model GYMElements((char*)"Models/gymElementos.obj");
     Model pelota((char*)"Models/areaGYM/ball.obj");
- main
+
 
 
     

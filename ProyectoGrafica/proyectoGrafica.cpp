@@ -71,7 +71,7 @@ glm::vec3 pointLightPositions[] = {
 glm::vec3 Light1 = glm::vec3(0);
 
 ////////////////7/ Variables para la animación de la pelota//////////////////
-glm::vec3 pelotaPos = glm::vec3(0.0f, 1.5f, 0.0f); // Posición inicial
+glm::vec3 pelotaPos = glm::vec3(-3.5f, 1.0f, -2.0f); // Posición inicial
 float tiempoAnimacion = 0.0f; // Tiempo para la animación
 bool animacionActiva = false; // Control de la animación
 
@@ -440,10 +440,10 @@ void UpdateBallAnimation()
     {
         tiempoAnimacion += deltaTime; // Incrementar el tiempo de animación
         float altura = abs(cos(tiempoAnimacion) * exp(-0.1f * tiempoAnimacion)); // Función cosenoidal para la altura
-        pelotaPos.y = altura * 1.5f; // Ajustar la altura de la pelota
+        pelotaPos.y = altura * 1.0f; // Ajustar la altura de la pelota
 
         // Movimiento en el eje X con decaimiento exponencial
-        float desplazamientoX = sin(tiempoAnimacion) * exp(-0.1f * tiempoAnimacion) * 1.0f; // Función seno con decaimiento
+        float desplazamientoX = sin(tiempoAnimacion) * exp(-0.1f * tiempoAnimacion) * 0.5f; // Función seno con decaimiento
         pelotaPos.x = desplazamientoX; // Ajustar la posición en X de la pelota
     }
 }
@@ -458,6 +458,8 @@ void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mod
     if (key == GLFW_KEY_R)
     {
         animacionActiva = true;
+        tiempoAnimacion = 0.0f; // Reiniciar el tiempo de animación
+        pelotaPos = glm::vec3(-3.5f, 1.0f, -2.0f); // Reiniciar la posición de la pelota
     }
     
     if ( key >= 0 && key < 1024 )

@@ -43,6 +43,7 @@ int SCREEN_WIDTH, SCREEN_HEIGHT;
 void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mode );
 void MouseCallback( GLFWwindow *window, double xPos, double yPos );
 void DoMovement( );
+void UpdateBallAnimation(); // Nueva función para la animación de la pelota
 
 
 // Camera
@@ -71,6 +72,11 @@ glm::vec3 pointLightPositions[] = {
 
 
 glm::vec3 Light1 = glm::vec3(0);
+
+////////////////7/ Variables para la animación de la pelota//////////////////
+glm::vec3 pelotaPos = glm::vec3(-3.5f, 1.0f, -2.0f); // Posición inicial
+float tiempoAnimacion = 0.0f; // Tiempo para la animación
+bool animacionActiva = false; // Control de la animación
 
 int main( )
 {
@@ -138,10 +144,13 @@ int main( )
     Model areaAlberca((char*)"Models/AreaAlberca.obj");
     Model agua((char*)"Models/agua.obj");
     Model flotador((char*)"Models/flotador.obj");
+
+    //Edificio
     Model edificio((char*)"Models/EdificioPrincipal.obj");
     Model cristales((char*)"Models/Cristales.obj");
     Model suelo((char*)"Models/Plano.obj");
 
+ Adicionales
 
     /////////////////////////// Vertices para el skybox ////////////////////////////
 
@@ -205,6 +214,20 @@ int main( )
 
     ///////////////////////////////////////////////////////////////////////////////
 
+
+    //SpaArea
+    Model spa((char*)"Models/areaSpa/spaCompleto3.obj");
+
+    //Juegos
+    Model areaJuegos((char*)"Models/areaJuegos.obj");
+    Model columpio((char*)"Models/Columpios.obj");
+
+    //GYM
+    Model GYM((char*)"Models/gym.obj");
+    Model cristalesGYM((char*)"Models/CristalesGYM.obj");
+    Model GYMElements((char*)"Models/gymElementos.obj");
+    Model pelota((char*)"Models/areaGYM/ball.obj");
+ main
 
 
     
@@ -295,6 +318,9 @@ int main( )
         // Check and call events
         glfwPollEvents();
         DoMovement();
+
+        ///////////////////// Actualizar la posición de la pelota
+        UpdateBallAnimation();
 
         // Clear the colorbuffer
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
@@ -389,7 +415,61 @@ int main( )
         glm::mat4 modelAlberca(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelAlberca));
         areaAlberca.Draw(lightingShader);
+
+
+       /////////////////////Modelo de area juegos////////////////
+       
+        glm::mat4 modelJuegos(1);
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelJuegos));
+        areaJuegos.Draw(lightingShader);
      
+        glm::mat4 modelColumpio(1);
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelColumpio));
+        columpio.Draw(lightingShader);
+
+        ////////////////////////GYM/////////////////////////////////
+        glm::mat4 modelGYM(1);
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelGYM));
+        GYM.Draw(lightingShader);
+
+        glm::mat4 modelGYME(1);
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelGYME));
+        GYMElements.Draw(lightingShader);
+
+        ////////////////////Modelo pelota////////////////
+        glm::mat4 modelPelota(1);
+        modelPelota = glm::translate(model, pelotaPos);
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelPelota));
+        pelota.Draw(lightingShader);
+
+        glm::mat4 modelCrisGYM(1);
+        glEnable(GL_BLEND); //Activa la funcionalidad para trabajar en el canal alfa
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 1); //Se pone 1 para poder visualizar la transparencia 
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelCrisGYM));
+        cristalesGYM.Draw(lightingShader);
+        glDisable(GL_BLEND);
+
+        ////////////////////////////////////////////////////////////
+        
+
+
+        ////////////////////////ÁREA SPA/////////////////////////
+
+        glm::mat4 modelSpa(1);
+        //glEnable(GL_BLEND); //Activa la funcionalidad para trabajar en el canal alfa
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        model = glm::translate(model, glm::vec3(12.433f, 0.3f, -9.0f));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        //glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 1); //Se pone 1 para poder visualizar la transparencia 
+        spa.Draw(lightingShader);
+
+
+  
+        ////////////////////////////////////////////////////////////
+        
+
         //////////////////ANIMACIÓN ALBERCA////////////////
 
         AlbShader.Use(); //Llama al shader de shaderAgua
@@ -496,12 +576,32 @@ void DoMovement( )
    
 }
 
+void UpdateBallAnimation()
+{
+    if (animacionActiva)
+    {
+        tiempoAnimacion += deltaTime; // Incrementar el tiempo de animación
+        float altura = abs(cos(tiempoAnimacion) * exp(-0.1f * tiempoAnimacion)); // Función cosenoidal para la altura
+        pelotaPos.y = altura * 1.0f; // Ajustar la altura de la pelota
+
+        // Movimiento en el eje X con decaimiento exponencial
+        float desplazamientoX = sin(tiempoAnimacion) * exp(-0.1f * tiempoAnimacion) * 0.5f; // Función seno con decaimiento
+        pelotaPos.x = desplazamientoX; // Ajustar la posición en X de la pelota
+    }
+}
+
 // Is called whenever a key is pressed/released via GLFW
 void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mode )
 {
     if ( GLFW_KEY_ESCAPE == key && GLFW_PRESS == action )
     {
         glfwSetWindowShouldClose(window, GL_TRUE);
+    }
+    if (key == GLFW_KEY_R)
+    {
+        animacionActiva = true;
+        tiempoAnimacion = 0.0f; // Reiniciar el tiempo de animación
+        pelotaPos = glm::vec3(-3.5f, 1.0f, -2.0f); // Reiniciar la posición de la pelota
     }
     
     if ( key >= 0 && key < 1024 )

@@ -151,7 +151,7 @@ int main()
     Model suelo((char*)"Models/Plano.obj");
 
     //SpaArea
-    /*Model spa((char*)"Models/areaSpa/spaCompleto3.obj");*/
+    Model spa((char*)"Models/areaSpa/CompleteSpa.obj");
 
 
 
@@ -457,30 +457,10 @@ int main()
 
         ////////////////////////ÁREA SPA/////////////////////////
 
-
-        //glm::mat4 modelSpa(1);
-        ////glEnable(GL_BLEND); //Activa la funcionalidad para trabajar en el canal alfa
-        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        //model = glm::translate(model, glm::vec3(12.433f, 0.3f, -9.0f));
-        //glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        ////glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 1); //Se pone 1 para poder visualizar la transparencia 
-        //spa.Draw(lightingShader);
-
-        //Estructura SPA
-        /*glm::mat4 modelSpa(1);
+        glm::mat4 modelSpa(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelSpa));
-        spa.Draw(lightingShader);*/
+        spa.Draw(lightingShader);
 
-
-        //Cristales del SPA
-        /*glm::mat4 modelCrisSPA(1);
-        glEnable(GL_BLEND); //Activa la funcionalidad para trabajar en el canal alfa
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 1); //Se pone 1 para poder visualizar la transparencia 
-        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelCrisSPA));
-        Cristalspa.Draw(lightingShader);
-        glDisable(GL_BLEND); */
   
         ////////////////////////////////////////////////////////////
         

@@ -151,12 +151,9 @@ int main()
     Model suelo((char*)"Models/Plano.obj");
 
     //SpaArea
-    //Model spa((char*)"Models/areaSpa/spaCompleto3.obj");
-    
-    //Model spa((char*)"Models/areaSpa/SpaCompleto.obj");
-    //Model spaM((char*)"Models/areaSpa/MuroSPA.obj");
-    //Model spaP((char*)"Models/areaSpa/pisoSPA.obj");
-    //Model Cristalspa((char*)"Models/areaSpa/CristalSPA.obj");
+    /*Model spa((char*)"Models/areaSpa/spaCompleto3.obj");*/
+
+
 
     //Juegos
     Model areaJuegos((char*)"Models/areaJuegos.obj");
@@ -167,6 +164,9 @@ int main()
     Model cristalesGYM((char*)"Models/CristalesGYM.obj");
     Model GYMElements((char*)"Models/gymElementos.obj");
     Model pelota((char*)"Models/areaGYM/ball.obj");
+
+    //Adicionales - Plantas
+    Model plantas((char*)"Models/plantas.obj");
 
     /////////////////////////// Vertices para el skybox ////////////////////////////
 
@@ -471,15 +471,6 @@ int main()
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelSpa));
         spa.Draw(lightingShader);*/
 
-        //Estructura SPA - Muro
-        //glm::mat4 modelMuroSpa(1);
-        //glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelMuroSpa));
-        //spaM.Draw(lightingShader);
-
-        //Estructura SPA - Piso
-        //glm::mat4 modelPisoSpa(1);
-        //glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelPisoSpa));
-       // spaP.Draw(lightingShader);
 
         //Cristales del SPA
         /*glm::mat4 modelCrisSPA(1);
@@ -493,6 +484,11 @@ int main()
   
         ////////////////////////////////////////////////////////////
         
+
+        //Plantas
+        glm::mat4 modelPlantas(1);
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelPlantas));
+        plantas.Draw(lightingShader);
 
         //////////////////ANIMACIÓN ALBERCA////////////////
 

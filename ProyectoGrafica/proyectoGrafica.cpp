@@ -152,6 +152,7 @@ int main()
 
     //SpaArea
     Model spa((char*)"Models/areaSpa/CompleteSpa.obj");
+    Model cristalSpa((char*)"Models/spaCristales.obj");
 
 
 
@@ -460,6 +461,15 @@ int main()
         glm::mat4 modelSpa(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelSpa));
         spa.Draw(lightingShader);
+
+        glm::mat4 modelCristalesSPA(1);
+        glEnable(GL_BLEND); //Activa la funcionalidad para trabajar en el canal alfa
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 1); //Se pone 1 para poder visualizar la transparencia 
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelCristalesSPA));
+        cristalSpa.Draw(lightingShader);
+        glDisable(GL_BLEND);
 
   
         ////////////////////////////////////////////////////////////

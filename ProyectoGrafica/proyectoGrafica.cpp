@@ -74,7 +74,7 @@ glm::vec3 pointLightPositions[] = {
 glm::vec3 Light1 = glm::vec3(0);
 
 ////////////////7/ Variables para la animación de la pelota//////////////////
-glm::vec3 pelotaPos = glm::vec3(-3.5f, 1.0f, -2.0f); // Posición inicial
+glm::vec3 pelotaPos = glm::vec3(0.0f, 1.0f, 0.0f); // Posición inicial
 float tiempoAnimacion = 0.0f; // Tiempo para la animación
 bool animacionActiva = false; // Control de la animación
 
@@ -600,8 +600,7 @@ void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mod
     if (key == GLFW_KEY_R)
     {
         animacionActiva = true;
-        tiempoAnimacion = 0.0f; // Reiniciar el tiempo de animación
-        pelotaPos = glm::vec3(-3.5f, 1.0f, -2.0f); // Reiniciar la posición de la pelota
+        tiempoAnimacion = 0.0f; 
     }
     
     if ( key >= 0 && key < 1024 )

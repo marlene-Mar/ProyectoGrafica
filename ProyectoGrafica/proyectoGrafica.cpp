@@ -23,6 +23,9 @@
 #include "Camera.h"
 #include "Model.h"
 
+//libreria para el skybox
+#include "Texture.h"
+
 // GLM Mathemtics
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -75,55 +78,55 @@ glm::vec3 pelotaPos = glm::vec3(-3.5f, 1.0f, -2.0f); // Posición inicial
 float tiempoAnimacion = 0.0f; // Tiempo para la animación
 bool animacionActiva = false; // Control de la animación
 
-int main( )
+int main()
 {
     // Init GLFW
-    glfwInit( );
+    glfwInit();
     // Set all the required options for GLFW
-    glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
-    glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 3 );
-    glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
-    glfwWindowHint( GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE );
-    glfwWindowHint( GLFW_RESIZABLE, GL_FALSE );
-    
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+
     // Create a GLFWwindow object that we can use for GLFW's functions
-    GLFWwindow *window = glfwCreateWindow( WIDTH, HEIGHT, "Proyecto Grafica - Hotel OASIS DEL SOL", nullptr, nullptr );
-    
-    if ( nullptr == window )
+    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Proyecto Grafica - Hotel OASIS DEL SOL", nullptr, nullptr);
+
+    if (nullptr == window)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate( );
-        
+        glfwTerminate();
+
         return EXIT_FAILURE;
     }
-    
-    glfwMakeContextCurrent( window );
-    glfwGetFramebufferSize( window, &SCREEN_WIDTH, &SCREEN_HEIGHT );
-    
+
+    glfwMakeContextCurrent(window);
+    glfwGetFramebufferSize(window, &SCREEN_WIDTH, &SCREEN_HEIGHT);
+
     // Set the required callback functions
-    glfwSetKeyCallback( window, KeyCallback );
-    glfwSetCursorPosCallback( window, MouseCallback );
-    
+    glfwSetKeyCallback(window, KeyCallback);
+    glfwSetCursorPosCallback(window, MouseCallback);
+
     // GLFW Options
     //glfwSetInputMode( window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
-    
+
     // Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
     glewExperimental = GL_TRUE;
     // Initialize GLEW to setup the OpenGL Function pointers
-    if ( GLEW_OK != glewInit( ) )
+    if (GLEW_OK != glewInit())
     {
         std::cout << "Failed to initialize GLEW" << std::endl;
         return EXIT_FAILURE;
     }
-    
+
     // Define the viewport dimensions
-    glViewport( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT );
-    
+    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
     // OpenGL options
-    glEnable( GL_DEPTH_TEST );
-    
+    glEnable(GL_DEPTH_TEST);
+
     // Setup and compile our shaders
-    Shader shader( "Shader/modelLoading.vs", "Shader/modelLoading.frag" );
+    Shader shader("Shader/modelLoading.vs", "Shader/modelLoading.frag");
     Shader lightingShader("Shader/lighting.vs", "Shader/lighting.frag");
 
     //////////////////ANIMACIÓN ALBERCA////////////////
@@ -133,33 +136,116 @@ int main( )
     Shader FlotShader("Shader/ShaderFlotador.vs", "Shader/ShaderFlotador.frag");
 
     ///////////////////////////////////////////////////
-    
+
+    ////////////////// Shader para el skybox ///////////////////////////
+    Shader skyboxShader("Shader/SkyBox.vs", "Shader/SkyBox.frag");
+
     // Load models
     Model areaAlberca((char*)"Models/AreaAlberca.obj");
     Model agua((char*)"Models/agua.obj");
     Model flotador((char*)"Models/flotador.obj");
+
     //Edificio
     Model edificio((char*)"Models/EdificioPrincipal.obj");
     Model cristales((char*)"Models/Cristales.obj");
     Model suelo((char*)"Models/Plano.obj");
+
+    //SpaArea
+    Model spa((char*)"Models/areaSpa/CompleteSpa.obj");
+
+
+
     //Juegos
     Model areaJuegos((char*)"Models/areaJuegos.obj");
     Model columpio((char*)"Models/Columpios.obj");
-    //SPA
-    Model spa((char*)"Models/areaSpa/spaCompleto2.obj"); 
+
     //GYM
     Model GYM((char*)"Models/gym.obj");
     Model cristalesGYM((char*)"Models/CristalesGYM.obj");
     Model GYMElements((char*)"Models/gymElementos.obj");
     Model pelota((char*)"Models/areaGYM/ball.obj");
 
+    //Adicionales - Plantas
+    Model plantas((char*)"Models/plantas.obj");
+
+    /////////////////////////// Vertices para el skybox ////////////////////////////
+
+    GLfloat skyboxVertices[] = {
+        // Positions
+        -1.0f,  1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+        -1.0f,  1.0f, -1.0f,
+        1.0f,  1.0f, -1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+        1.0f, -1.0f,  1.0f
+    };
+
+    GLuint indices[] =
+    {  // Note that we start from 0!
+        0,1,2,3,
+        4,5,6,7,
+        8,9,10,11,
+        12,13,14,15,
+        16,17,18,19,
+        20,21,22,23,
+        24,25,26,27,
+        28,29,30,31,
+        32,33,34,35
+    };
+
+    ///////////////////////////////////////////////////////////////////////////////
+
     
     // First, set the container's VAO (and VBO)
-    GLuint VBO, VAO;
+    GLuint VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    /////////////// BUFFER PARA SKYBOX ////////////
+    glGenBuffers(1, &EBO);
+    ///////////////////////////////////////////////
+
+    ///// SKYBOX /////
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    //////////////////////////////////////////////////////////////////////////////////////////
+
 
     // Position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
@@ -173,6 +259,30 @@ int main( )
     lightingShader.Use();
     glUniform1i(glGetUniformLocation(lightingShader.Program, "Material.diffuse"), 0);
     glUniform1i(glGetUniformLocation(lightingShader.Program, "Material.specular"), 1);
+
+    ////////////// SKYBOX ////////////
+    GLuint skyBoxVBO, skyBoxVAO;
+    glGenVertexArrays(1, &skyBoxVAO);
+    glGenBuffers(1, &skyBoxVBO);
+    glBindVertexArray(skyBoxVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, skyBoxVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+
+    /////////////////////////// CARGA TEXTURAS SKYBOX //////////////////////////////////
+    vector < const GLchar*> faces;
+    faces.push_back("SkyBox/izq.jpg");
+    faces.push_back("SkyBox/der.jpg");
+    faces.push_back("SkyBox/arriba.jpg");
+    faces.push_back("SkyBox/debajo.jpg");
+    faces.push_back("SkyBox/atras.jpg");
+    faces.push_back("SkyBox/frente.jpg");
+
+    GLuint cubemapTexture = TextureLoading::LoadCubemap(faces);
+
+
+
 
     glm::mat4 projection = glm::perspective( camera.GetZoom( ), ( float )SCREEN_WIDTH/( float )SCREEN_HEIGHT, 0.1f, 100.0f );
     
@@ -346,14 +456,19 @@ int main( )
 
 
         ////////////////////////ÁREA SPA/////////////////////////
+
         glm::mat4 modelSpa(1);
-        modelSpa = glm::translate(model, glm::vec3(12.433f, 0.0f, -9.896f));
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelSpa));
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelSpa));
         spa.Draw(lightingShader);
 
   
         ////////////////////////////////////////////////////////////
         
+
+        //Plantas
+        glm::mat4 modelPlantas(1);
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelPlantas));
+        plantas.Draw(lightingShader);
 
         //////////////////ANIMACIÓN ALBERCA////////////////
 
@@ -396,12 +511,39 @@ int main( )
 
 
         ///////////////////////////////////////////////////
+
+
+        //////////// SKYBOX ///////////////
+        glDepthFunc(GL_LEQUAL); //hace que no interfiera con otros objetos //Función de profundidad
+        skyboxShader.Use();
+        view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
+        glUniformMatrix4fv(glGetUniformLocation(skyboxShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(glGetUniformLocation(skyboxShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+
+        glBindVertexArray(skyBoxVAO);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glBindVertexArray(0);
+        glDepthFunc(GL_LESS);
+
       
         // Swap the buffers
         glDeleteVertexArrays(1, &VAO);
         glfwSwapBuffers( window ); 
+
+
+
+
     }
     
+    /////////////////Borramos buffers 
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteVertexArrays(1, &skyBoxVAO);
+    glDeleteBuffers(1, &skyBoxVAO);
+
+
     glfwTerminate( );
     return 0;
 }
@@ -473,10 +615,10 @@ void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mod
             keys[key] = false;
         }
     }
-
  
 
- 
+
+
 }
 
 void MouseCallback( GLFWwindow *window, double xPos, double yPos )

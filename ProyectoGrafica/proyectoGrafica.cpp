@@ -44,6 +44,7 @@ void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mod
 void MouseCallback( GLFWwindow *window, double xPos, double yPos );
 void DoMovement( );
 void BallAnimation(); // Nueva función para la animación de la pelota
+void Animation(); //Función para los frames 
 
 
 // Camera
@@ -61,6 +62,225 @@ float tiempo; //Variable para caluclar el tiempo de animación
 bool dir = true; //Varirble para verificar el cambio en tiempo
 
 //////////////////////////////////////////////////
+
+/////////////////////////////// ANIMACIÓN AVE ///////////////////////////////////
+
+bool animAve = false;
+//int animAve = 0;
+
+float cola = 0.0f;
+float cuerpo = 0.0f;
+float alaDer = 0.0f;
+float alaIzq = 0.0f;
+glm::vec3 avePos(-3.411f, 1.346f, 10.143f); // posición inicial del ave 
+bool step = false;
+float rotPaj = 0.0f;
+//float avePosX = -3.411f;
+//float avePosY = 1.346f;
+//float avePosZ = 10.143f;
+
+//////////////////////////////////////////////////////////
+
+/////////////////////// FRAMES ///////////////////////////
+
+//Variables para los KeyFrames 
+
+float rotPajX = 0; //Variable para rotación
+
+/*Variables de posición */
+//KeyFrames
+//float avePosX, avePosY, avePosZ;
+
+float avePosX = -3.411f;
+float avePosY = 1.346f;
+float avePosZ = 10.143f;
+
+#define MAX_FRAMES 15 //Cuadros permitidos para grabar
+int i_max_steps = 190;
+int i_curr_steps = 0; // linea de tiempo que vamos a utilizar
+
+//variables que controlan al modelo
+typedef struct _frame {
+
+    //rotación del perrito 
+    float rotPaj;
+    float rotPajInc;
+
+    //posiicon del perrito
+    float avePosX;
+    float avePosY;
+    float avePosZ;
+
+    float incX; //cambio que hay desde un keyframe a otro //incremento que hay en la línea de tiempo. 
+    float incY;
+    float incZ;
+
+
+    // ------------------------- CUERPO ----------------*
+    float cuerpo;
+    float cuerpoInc;
+
+    // ---------------------- COLA ------------------* 
+    float cola;
+    float colaInc;
+    //--------------------- ALA DERECHA ------------*
+
+    float alaDer;
+    float alaDerInc;
+
+
+    //------------------- ALA IZQUIERDA ---------------------*
+    float alaIzq;
+    float alaIzqInc;
+
+
+    //Variables para la rotación
+    float rotPajX; //////////// rotación en x 
+    float rotPajXInc;
+
+}FRAME;
+
+FRAME KeyFrame[MAX_FRAMES];
+int FrameIndex = 0;			//introducir datos
+bool play = false; //indicador de si se reproduce o no la animación
+int playIndex = 0; //indica en que paso de la animación se encuentra el modelo 
+
+
+//FUnción que guarda toda esa función //GUARDA LOS KEYFRAMES
+
+//Función para guardar los datos de un archivo de texto 
+void saveAnimation(const char* filename = "animKeyF.txt") {
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error al abrir el archivo para guardar." << std::endl;
+        return;
+    }
+
+    for (int i = 0; i < FrameIndex; i++) {
+        file << KeyFrame[i].avePosX << " "
+            << KeyFrame[i].avePosY << " "
+            << KeyFrame[i].avePosZ << " "
+            << KeyFrame[i].rotPaj << " "
+            << KeyFrame[i].cuerpo << " "
+            << KeyFrame[i].cola << " "
+            << KeyFrame[i].alaDer << " "
+            << KeyFrame[i].alaIzq << " "
+            << KeyFrame[i].rotPajX << "\n";
+    }
+    file.close();
+    std::cout << "Animación guardada" << std::endl;
+}
+
+// Función para cargar los KeyFrames
+void obtenerAnimation(const char* filename = "animKeyF.txt") {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error al abrir el archivo para cargar." << std::endl;
+        return;
+    }
+
+    FrameIndex = 0;
+    while (FrameIndex < MAX_FRAMES &&
+        file >> KeyFrame[FrameIndex].avePosX
+        >> KeyFrame[FrameIndex].avePosY
+        >> KeyFrame[FrameIndex].avePosZ
+        >> KeyFrame[FrameIndex].rotPaj
+        >> KeyFrame[FrameIndex].cuerpo
+        >> KeyFrame[FrameIndex].cola
+        >> KeyFrame[FrameIndex].alaDer
+        >> KeyFrame[FrameIndex].alaIzq
+        >> KeyFrame[FrameIndex].rotPajX) {
+        FrameIndex++;
+    }
+}
+
+
+void saveFrame(void)
+{
+
+    printf("frameindex %d\n", FrameIndex);
+
+    //Guarda el estado actual del modelo en la estructura que se definio previamente 
+    KeyFrame[FrameIndex].avePosX = avePosX;
+    KeyFrame[FrameIndex].avePosY = avePosY;
+    KeyFrame[FrameIndex].avePosZ = avePosZ;
+
+    KeyFrame[FrameIndex].rotPaj = rotPaj;
+
+    //variables para la cabeza 
+    KeyFrame[FrameIndex].cuerpo = cuerpo;
+    //printf("%.2f", KeyFrame[FrameIndex].head); //nos imprime los valores que vamos a necesitar guardar en el archivo para ejecutar el keyframe 
+
+    //Cola
+    KeyFrame[FrameIndex].cola = cola;
+
+    //----------------------------- ALAS -------------* 
+
+    KeyFrame[FrameIndex].alaDer = alaDer;
+    KeyFrame[FrameIndex].alaIzq = alaIzq;
+
+    //imprimir el frame para observar los datos que nos da, estos valores son los que se van a guardar en el archivo 
+
+    FrameIndex++;
+}
+
+
+
+
+//Función que reinicia a la posicióninicial 
+void resetElements(void)
+{
+    avePosX = KeyFrame[0].avePosX;
+    avePosY = KeyFrame[0].avePosY;
+    avePosZ = KeyFrame[0].avePosZ;
+
+    //rotaciones
+    rotPaj = KeyFrame[0].rotPaj;
+    rotPajX = KeyFrame[0].rotPajX;
+
+    //variable para el cuerpo
+    cuerpo = KeyFrame[0].cuerpo; //inicializamos
+
+    //variable cola
+    cola = KeyFrame[0].cola;
+
+    //Alas 
+    alaDer = KeyFrame[0].alaDer;
+    alaIzq = KeyFrame[0].alaIzq;
+}
+
+//diferencia en las variables (rotaciones y posiciones) //REPRODUCE LOS KEFRAMES
+void interpolation(void)
+{
+
+    KeyFrame[playIndex].incX = (KeyFrame[playIndex + 1].avePosX - KeyFrame[playIndex].avePosX) / i_max_steps;
+    KeyFrame[playIndex].incY = (KeyFrame[playIndex + 1].avePosY - KeyFrame[playIndex].avePosY) / i_max_steps;
+    KeyFrame[playIndex].incZ = (KeyFrame[playIndex + 1].avePosZ - KeyFrame[playIndex].avePosZ) / i_max_steps;
+    //ROTACIONES
+    KeyFrame[playIndex].rotPajInc = (KeyFrame[playIndex + 1].rotPaj - KeyFrame[playIndex].rotPaj) / i_max_steps;
+    KeyFrame[playIndex].rotPajXInc = (KeyFrame[playIndex + 1].rotPaj - KeyFrame[playIndex].rotPajX) / i_max_steps;
+
+    //variable para la cabeza
+    KeyFrame[playIndex].cuerpoInc = (KeyFrame[playIndex + 1].cuerpo - KeyFrame[playIndex].cuerpo) / i_max_steps;
+
+    //variable cola
+    KeyFrame[playIndex].colaInc = (KeyFrame[playIndex + 1].cola - KeyFrame[playIndex].cola) / i_max_steps;
+
+
+    //----------------------- ALAS
+
+    //variable pata derecha
+
+    KeyFrame[playIndex].alaDerInc = (KeyFrame[playIndex + 1].alaDer - KeyFrame[playIndex].alaDer) / i_max_steps;
+    KeyFrame[playIndex].alaIzqInc = (KeyFrame[playIndex + 1].alaIzq - KeyFrame[playIndex].alaIzq) / i_max_steps;
+
+
+
+}
+
+//////////////////////////////////// FIN FRAMES ///////////////////////////////
+
+
 
 // Positions of the point lights
 glm::vec3 pointLightPositions[] = {
@@ -168,6 +388,52 @@ int main()
 
     //Adicionales - Plantas
     Model plantas((char*)"Models/plantas.obj");
+
+    ////------------------ Modelos ave 
+    Model colaPaj((char*)"Models/pajaro/cola.obj");
+    Model cuerpoPaj((char*)"Models/pajaro/cuerpo.obj");
+    Model alaDerPaj((char*)"Models/pajaro/alaDer.obj");
+    Model alaIzqPaj((char*)"Models/pajaro/alaIzq.obj");
+
+    ////////////////////////// KEYFRAMES //////////////////////////////////
+
+    /*Iniciarlizar todos los frames en 0 */
+    //KeyFrames
+    for (int i = 0; i < MAX_FRAMES; i++)
+    {
+        KeyFrame[i].avePosX = 0;
+        KeyFrame[i].avePosY = 0;
+        KeyFrame[i].avePosZ = 0;
+        KeyFrame[i].incX = 0;
+        KeyFrame[i].incY = 0;
+        KeyFrame[i].incZ = 0;
+        KeyFrame[i].rotPaj = 0;
+        KeyFrame[i].rotPajInc = 0;
+
+        KeyFrame[i].rotPajX = 0;
+        KeyFrame[i].rotPajXInc = 0;
+
+        // Cuerpo
+        KeyFrame[i].cuerpo = 0;
+        KeyFrame[i].cuerpoInc = 0;
+
+        // Cola
+        KeyFrame[i].cola = 0;
+        KeyFrame[i].colaInc = 0;
+
+        //Ala derecha
+        KeyFrame[i].alaDer = 0;
+        KeyFrame[i].alaDerInc = 0;
+
+        //Ala izquierda
+        KeyFrame[i].alaIzq = 0;
+        KeyFrame[i].alaIzqInc = 0;
+
+
+    }
+
+    /////////////////////////////////////////////////////////////////////
+
 
     /////////////////////////// Vertices para el skybox ////////////////////////////
 
@@ -330,6 +596,8 @@ int main()
         // OpenGL options
         glEnable(GL_DEPTH_TEST);
 
+        glm::mat4 modelTemp = glm::mat4(1.0f); // Matriz Temporal 
+
         lightingShader.Use();
 
         glUniform1i(glGetUniformLocation(lightingShader.Program, "diffuse"), 0);
@@ -389,6 +657,44 @@ int main()
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
         // Draw the loaded model
+         ///////// ----------------------- AVE ---------------------*
+
+        glm::mat4 modelAve(1);
+
+        modelAve = glm::mat4(1);
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelAve));
+        glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"), 0);
+
+        //Body
+        modelTemp = modelAve = glm::translate(modelAve, glm::vec3(avePosX, avePosY, avePosZ));
+        modelTemp = modelAve = glm::rotate(modelAve, glm::radians(rotPaj), glm::vec3(0.0f, 0.0f, 1.0f));
+        modelTemp = modelAve = glm::rotate(modelAve, glm::radians(rotPajX), glm::vec3(1.0f, 0.0f, 0.0f)); //mueve el cuerpo arriba abajo
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelAve));
+        cuerpoPaj.Draw(lightingShader);
+
+        //cola
+        modelAve = modelTemp;
+        modelAve = glm::translate(modelAve, glm::vec3(-3.927f + 3.411f, 1.343f - 1.346f, 10.143f - 10.143f)); // se aplican los valores del sistema de referencia que se tiene desde 3DMax 
+        modelAve = glm::rotate(modelAve, glm::radians(cola), glm::vec3(0.0f, 0.0f, 1.0f)); // en la rotación se le pasa la variable que va a ayudar a rotar esa sección del cuerpo y en que eje se realiza la rotación
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelAve));
+        colaPaj.Draw(lightingShader);
+
+        //Ala derecho 
+        modelAve = modelTemp;
+        modelAve = glm::translate(modelAve, glm::vec3(-3.433f + 3.411f, 1.32f - 1.346f, 9.851f - 9.551f)); // se aplican los valores del sistema de referencia que se tiene desde 3DMax 
+        modelAve = glm::rotate(modelAve, glm::radians(alaDer), glm::vec3(-1.0f, 0.0f, 0.0f)); // en la rotación se le pasa la variable que va a ayudar a rotar esa sección del cuerpo y en que eje se realiza la rotación 
+        modelAve = glm::rotate(modelAve, glm::radians(alaDer), glm::vec3(0.0f, 0.0f, 1.0f)); //mueve el ala de arriba abajo
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelAve));
+        alaDerPaj.Draw(lightingShader);
+
+        // Ala izquierdo
+        modelAve = modelTemp;
+        modelAve = glm::translate(modelAve, glm::vec3(-3.433f + 3.411f, 1.32f - 1.346f, -9.851f + 9.551f)); // se aplican los valores del sistema de referencia que se tiene desde 3DMax 
+        modelAve = glm::rotate(modelAve, glm::radians(alaIzq), glm::vec3(-1.0f, 0.0f, 0.0f)); // en la rotación se le pasa la variable que va a ayudar a rotar esa sección del cuerpo y en que eje se realiza la rotación
+        modelAve = glm::rotate(modelAve, glm::radians(alaIzq), glm::vec3(0.0f, 0.0f, 1.0f)); //mueve el ala de arriba abajo
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelAve));
+        alaIzqPaj.Draw(lightingShader);
+
         glm::mat4 model(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
         
@@ -583,6 +889,90 @@ void DoMovement( )
         camera.ProcessKeyboard( RIGHT, deltaTime );
     }
 
+    ///////////////////////////////////////////////////// TECLAS PARA EL AVE ////////////////////////////////
+
+    //---------------------------------------- CUERPO -------------*
+
+    //Movimiento en X (arriba abajo )
+    if (keys[GLFW_KEY_Z])
+    {
+        rotPajX += 0.2f;
+    }
+
+    if (keys[GLFW_KEY_X])
+    {
+        rotPajX -= 0.2f;
+    }
+
+    //Movimiento en Y (a los lados)
+    if (keys[GLFW_KEY_C])
+    {
+        rotPaj += 1.0f;
+    }
+
+    if (keys[GLFW_KEY_V]) //Para rotar en sentido contrario 
+    {
+        rotPaj -= 1.0f;
+    }
+
+    //Movimiento enfrente y atras
+    if (keys[GLFW_KEY_B])
+    {
+        avePosX -= 0.01;
+    }
+
+    if (keys[GLFW_KEY_N])
+    {
+        avePosX += 0.01;
+    }
+
+    //Movimiento arriba y abajo 
+    if (keys[GLFW_KEY_M])
+    {
+        avePosY += 0.01;
+    }
+
+    if (keys[GLFW_KEY_P])
+    {
+        avePosY -= 0.01;
+    }
+
+
+    //----------------------------- ALAS -----------------*
+
+    //Ala derecha 
+
+    if (keys[GLFW_KEY_4])
+    {
+        alaDer += 0.2f;
+    }
+
+    if (keys[GLFW_KEY_5])
+    {
+        alaDer -= 0.2f;
+    }
+    // Ala izquierda
+    if (keys[GLFW_KEY_6]) {
+        alaIzq += 1.0f;
+    }
+    if (keys[GLFW_KEY_7]) {
+        alaIzq -= 1.0f;
+    }
+
+
+    //------------------------- COLA ----------------------*
+    if (keys[GLFW_KEY_8])
+    {
+        cola += 0.2f;
+    }
+
+    if (keys[GLFW_KEY_9])
+    {
+        cola -= 0.2f;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+
    
 }
 
@@ -603,6 +993,50 @@ void BallAnimation()
 // Is called whenever a key is pressed/released via GLFW
 void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mode )
 {
+    ///////////////////////////////////////////// KEYFRAMES ////////////////////////////
+    if (keys[GLFW_KEY_L])
+    {		//si la variable no se está reproduciendo 
+        if (play == false && (FrameIndex > 1))
+        {
+
+            resetElements();
+            //First Interpolation				
+            interpolation();
+            //aqui ya se esta reproduciendo la animación 
+            play = true;
+            playIndex = 0;
+            i_curr_steps = 0;
+        }
+        else
+        {
+            play = false;
+        }
+
+    }
+
+    if (keys[GLFW_KEY_K])
+    {
+        if (FrameIndex < MAX_FRAMES)
+        {
+            saveFrame(); //guarda el estado actual de los keyframes 
+        }
+
+    }
+
+    //IF para guardar los keyFrames en el archhivo
+    if (key == GLFW_KEY_G) {
+        saveAnimation();  // Guarda la animación en "Animacion.txt"
+    }
+
+    if (key == GLFW_KEY_1 && GLFW_PRESS == action) {
+
+        resetElements();  // Resetear los elementos a los primeros keyframes cargados
+        obtenerAnimation(); //Carga la animación por medio del archivo previamente guardado
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+
     if ( GLFW_KEY_ESCAPE == key && GLFW_PRESS == action )
     {
         glfwSetWindowShouldClose(window, GL_TRUE);
@@ -624,11 +1058,65 @@ void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mod
             keys[key] = false;
         }
     }
- 
-
-
 
 }
+
+void Animation() {
+    //if (animAve)
+    //{
+    //    rotPaj -= 0.6f;
+    //    //printf("%f", rotBall);
+    //}
+        /////////////////////////////////////////////////// KEYFRAMES ///////////////////////////////////////////////////////////
+    if (play)
+    {
+        if (i_curr_steps >= i_max_steps) //end of animation between frames?
+        {
+            playIndex++;
+            if (playIndex > FrameIndex - 2)	//end of total animation?
+            {
+                printf("termina anim\n");
+                playIndex = 0;
+                play = false;
+            }
+            else //Next frame interpolations
+            {
+                i_curr_steps = 0; //Reset counter
+                //Interpolation
+                interpolation();
+            }
+        }
+        else
+        {
+            //Draw animation
+            avePosX += KeyFrame[playIndex].incX;
+            avePosY += KeyFrame[playIndex].incY;
+            avePosZ += KeyFrame[playIndex].incZ;
+
+            rotPaj += KeyFrame[playIndex].rotPajInc;
+            rotPajX += KeyFrame[playIndex].rotPajXInc;
+
+            //para observar la animación del cuerpo
+            cuerpo += KeyFrame[playIndex].cuerpoInc;
+
+            //Cola
+            cola += KeyFrame[playIndex].colaInc;
+
+
+            //para observar la animación de las patas
+            alaDer += KeyFrame[playIndex].alaDerInc;
+            alaIzq += KeyFrame[playIndex].alaIzqInc;
+
+
+            i_curr_steps++;
+        }
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    }
+
+}
+
 
 void MouseCallback( GLFWwindow *window, double xPos, double yPos )
 {

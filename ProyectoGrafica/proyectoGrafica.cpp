@@ -586,6 +586,9 @@ int main()
         glfwPollEvents();
         DoMovement();
 
+        ////////////// Actualiza el modelo de ave ////////////
+        Animation();
+
         ///////////////////// Actualizar la posición de la pelota
         BallAnimation();
 
@@ -687,7 +690,7 @@ int main()
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelAve));
         alaDerPaj.Draw(lightingShader);
 
-        // Ala izquierdo
+        // Ala izquierda
         modelAve = modelTemp;
         modelAve = glm::translate(modelAve, glm::vec3(-3.433f + 3.411f, 1.32f - 1.346f, -9.851f + 9.551f)); // se aplican los valores del sistema de referencia que se tiene desde 3DMax 
         modelAve = glm::rotate(modelAve, glm::radians(alaIzq), glm::vec3(-1.0f, 0.0f, 0.0f)); // en la rotación se le pasa la variable que va a ayudar a rotar esa sección del cuerpo y en que eje se realiza la rotación

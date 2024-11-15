@@ -389,6 +389,9 @@ int main()
     //Adicionales - Plantas
     Model plantas((char*)"Models/plantas.obj");
 
+    //Lobby y recamaras
+    Model lobby((char*)"Models/areaLobby/lobby.obj");
+
     ////------------------ Modelos ave 
     Model colaPaj((char*)"Models/pajaro/cola.obj");
     Model cuerpoPaj((char*)"Models/pajaro/cuerpo.obj");
@@ -788,6 +791,11 @@ int main()
         glm::mat4 modelPlantas(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelPlantas));
         plantas.Draw(lightingShader);
+
+        //////////////////LOBBY Y RECAMARAA
+        glm::mat4 modelLobby(1);
+        glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelLobby));
+        lobby.Draw(lightingShader);
 
         //////////////////ANIMACIÓN ALBERCA////////////////
 

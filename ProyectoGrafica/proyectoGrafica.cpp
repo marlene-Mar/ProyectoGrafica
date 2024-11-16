@@ -107,6 +107,22 @@ float rotBoy = 0.0f;
 
 //////////////////////////////////////////////////////////
 
+/////////////////////ANIMACIÖN GLOBO /////////////////////////
+
+///variables globo 
+bool animGlobo = false;
+float globo = 0.0f;
+float canasta = 0.0f;
+glm::vec3 globoPos(0.0f, 5.165f, 10.809f);
+
+float rotGloboX = 0.0f;
+float rotGloboY = 0.0f;
+float rotGloboZ = 0.0f;
+/////////////////////////////////////////////////////////////////////
+
+
+
+
 /////////////////////// FRAMES ///////////////////////////
 
 //Variables para las animaciones por KeyFrames 
@@ -134,6 +150,7 @@ float boyPosZ = -8.331f;
 float sktPosX = -12.788f; 
 float sktPosY = 0.118f;    
 float sktPosZ = -7.11f;    
+
 
 
 #define MAX_FRAMES 50 //Cuadros permitidos para grabar
@@ -193,6 +210,19 @@ typedef struct _frame {
     //Variables rotación niño
     float rotBoyX; //////////// rotación en x 
     float rotBoyXInc;
+
+    //-------------------------- GLOBO --------------------*
+
+ //rotación del globo
+    float rotGloboX;
+    float rotGloboY;
+    float rotGloboZ;
+
+    float incGX;
+    float incGY;
+    float incGZ;
+
+    //////////////////////
 
 }FRAME;
 
@@ -399,6 +429,24 @@ void obtenerAnimation2(const char* filename = "animBoy.txt") {
 }
 
 
+////////////////////// AnimaciónGlobo //////////// 
+void obtenerAnimationGlobo(const char* filename = "animGlobo.txt") {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error al abrir el archivo para cargar." << std::endl;
+        return;
+    }
+
+    FrameIndex = 0;
+    while (FrameIndex < MAX_FRAMES &&
+        file >> KeyFrame[FrameIndex].rotGloboX
+        >> KeyFrame[FrameIndex].rotGloboY
+        >> KeyFrame[FrameIndex].rotGloboZ) {
+        FrameIndex++;
+
+    }
+}
+
 
 void saveFrameBoy(void)
 {
@@ -432,6 +480,12 @@ void saveFrameBoy(void)
 
 
     //imprimir el frame para observar los datos que nos da, estos valores son los que se van a guardar en el archivo 
+    
+    //---------------------------* globo
+    KeyFrame[FrameIndex].rotGloboX = rotGloboX;
+    KeyFrame[FrameIndex].rotGloboY = rotGloboY;
+    KeyFrame[FrameIndex].rotGloboZ = rotGloboZ;
+
 
     FrameIndexBoy++;
 
@@ -458,6 +512,11 @@ void resetElements(void)
     //Alas 
     alaDer = KeyFrame[0].alaDer;
     alaIzq = KeyFrame[0].alaIzq;
+
+    //Globo
+    rotGloboX = KeyFrame[0].rotGloboX;
+    rotGloboY = KeyFrame[0].rotGloboY;
+    rotGloboZ = KeyFrame[0].rotGloboZ;
 
 
 }
@@ -518,6 +577,11 @@ void interpolation(void)
 
     KeyFrame[playIndex].alaDerInc = (KeyFrame[playIndex + 1].alaDer - KeyFrame[playIndex].alaDer) / i_max_steps;
     KeyFrame[playIndex].alaIzqInc = (KeyFrame[playIndex + 1].alaIzq - KeyFrame[playIndex].alaIzq) / i_max_steps;
+
+    ///////////------------- GLOBO
+    KeyFrame[playIndex].incGX = (KeyFrame[playIndex + 1].rotGloboX - KeyFrame[playIndex].rotGloboX) / i_max_steps;
+    KeyFrame[playIndex].incGY = (KeyFrame[playIndex + 1].rotGloboY - KeyFrame[playIndex].rotGloboY) / i_max_steps;
+    KeyFrame[playIndex].incGZ = (KeyFrame[playIndex + 1].rotGloboZ - KeyFrame[playIndex].rotGloboZ) / i_max_steps;
 
 
 }
@@ -701,7 +765,8 @@ int main()
     Model body((char*)"Models/boy/cuerpo.obj");
     Model skate((char*)"Models/boy/ball.obj");
 
-
+    /////////////////////////// modelo globo////////////////////
+    Model globoComp((char*)"Models/globo/globoComp.obj");
 
     ////////////////////////// KEYFRAMES //////////////////////////////////
 
@@ -739,6 +804,14 @@ int main()
         KeyFrame[i].alaIzq = 0;
         KeyFrame[i].alaIzqInc = 0;
 
+        //GLOBO
+        KeyFrame[i].rotGloboX = 0;
+        KeyFrame[i].rotGloboY = 0;
+        KeyFrame[i].rotGloboZ = 0;
+
+        KeyFrame[i].incGX = 0;
+        KeyFrame[i].incGY = 0;
+        KeyFrame[i].incGZ = 0;
     }
 
     for (int i = 0; i < MAX_FRAMES_BOY; i++)
@@ -1194,6 +1267,15 @@ int main()
 
         ////////////////////////////////////////////////////////////
         
+        /////////////////////////// GLOBO ////////////////////////
+        glm::mat4 modelGlobo(1);
+        modelGlobo = glm::translate(modelGlobo, glm::vec3(12.433f, 5.165f, 10.0f));
+        modelGlobo = glm::rotate(modelGlobo, glm::radians(rotGloboX), glm::vec3(1.0f, 0.0f, 0.0f));
+        modelGlobo = glm::rotate(modelGlobo, glm::radians(rotGloboY), glm::vec3(0.0f, 1.0f, 0.0f));
+        modelGlobo = glm::rotate(modelGlobo, glm::radians(rotGloboZ), glm::vec3(0.0f, 0.0f, 1.0f));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelGlobo));
+        globoComp.Draw(lightingShader);
+
 
 
         ////////////////////////ÁREA SPA/////////////////////////
@@ -1555,6 +1637,12 @@ void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mod
 
     }
 
+    if (key == GLFW_KEY_2 && GLFW_PRESS == action) {
+
+        resetElements();  // Resetear los elementos a los primeros keyframes cargados
+        obtenerAnimationGlobo();
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1625,6 +1713,12 @@ void Animation() {
             alaDer += KeyFrame[playIndex].alaDerInc;
             alaIzq += KeyFrame[playIndex].alaIzqInc;
 
+            //Globo
+            rotGloboX += KeyFrame[playIndex].incGX;
+            rotGloboY += KeyFrame[playIndex].incGY;
+            rotGloboZ += KeyFrame[playIndex].incGZ;
+
+
             i_curr_steps++;
 
         }
@@ -1671,6 +1765,7 @@ void Animation() {
             brazoDer += KeyFrameBoy[playIndexBoy].brazoIzqInc;
             bicepIzq += KeyFrameBoy[playIndexBoy].bicepIzqInc;
             bicepDer += KeyFrameBoy[playIndexBoy].bicepDerInc;
+
 
             i_curr_steps_boy++;
 

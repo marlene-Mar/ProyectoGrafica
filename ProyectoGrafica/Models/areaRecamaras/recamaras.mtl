@@ -1,0 +1,157 @@
+newmtl Toilet_OBJ1:wire_086086086
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.34 0.34 0.34
+Tf 1.00 1.00 1.00
+map_Kd Blanco.jpg
+Ni 1.00
+Ks 0.35 0.35 0.35
+Ns 32.00
+newmtl bathroom2:blanco
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 96.08
+newmtl bathroom2:emitlight
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 96.08
+newmtl bathroom2:espejo
+illum 4
+Kd 0.73 0.74 0.80
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 120.00
+newmtl bathroom2:marmol
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd Blanco.jpg
+Ni 1.55
+Ks 0.40 0.40 0.40
+Ns 100.00
+newmtl bathroom2:metal_reflec
+illum 4
+Kd 0.60 0.60 0.60
+Ka 0.60 0.60 0.60
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 1.00 1.00 1.00
+Ns 128.00
+newmtl bathroom2:metalclaro
+illum 4
+Kd 0.70 0.70 0.70
+Ka 0.70 0.70 0.70
+Tf 1.00 1.00 1.00
+Ni 3.00
+Ks 0.80 0.80 0.80
+Ns 120.00
+newmtl bed1:Material_005
+illum 4
+Kd 0.00 0.00 0.00
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+Ni 1.45
+Ks 0.50 0.50 0.50
+Ns 225.00
+newmtl bed1:Material_006
+illum 4
+Kd 0.00 0.00 0.00
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+map_Kd bed_finis.png
+Ni 1.45
+Ks 0.50 0.50 0.50
+Ns 225.00
+newmtl blinn4SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd granite-texture-background.jpg
+Ni 1.00
+Ks 0.50 0.50 0.50
+newmtl com_bath5:metal
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.60 0.60 0.60
+Tf 1.00 1.00 1.00
+map_Kd Blanco.jpg
+Ni 3.00
+Ks 1.00 1.00 1.00
+Ns 128.00
+newmtl com_bath5:toalla_blanca
+illum 4
+Kd 0.00 0.00 0.00
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+map_Kd toalla_bump.jpg
+Ni 1.00
+Ks 0.10 0.10 0.10
+Ns 1.00
+newmtl plantas:Material__4284
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd granite-texture-background.jpg
+map_Ka granite-texture-background.jpg
+Ni 1.50
+Ks 0.00 0.00 0.00
+Ns 10.00
+newmtl plantas:Material__8170
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd howea_f_leaf_1_diffuse.jpg
+map_Ka howea_f_leaf_1_diffuse.jpg
+Ni 1.50
+Ks 0.00 0.00 0.00
+Ns 10.00
+newmtl plantas:Material__8173
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd cafe.jpg
+map_Ka cafe.jpg
+Ni 1.50
+Ks 0.00 0.00 0.00
+Ns 10.00
+newmtl sofa4:Fabric_124
+illum 4
+Kd 0.00 0.00 0.00
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+map_Kd fabric_124_albedo-2K.jpg
+Ni 1.45
+Ks 0.50 0.50 0.50
+Ns 250.00
+newmtl sofa4:set1
+illum 4
+Kd 0.05 0.03 0.01
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+Ni 1.45
+Ks 0.50 0.50 0.50
+Ns 29.83
+newmtl tripo_convert_fc859f43_cacf_4787_a3a9_0cb7882c3ae5:tripo_mat_fc859f43_cacf_4787_a3a9_0cb7882c3ae5
+illum 4
+Kd 0.00 0.00 0.00
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+map_Kd Diffuse_Bake.jpg
+Ni 1.45
+Ks 0.50 0.50 0.50
+Ns 0.06

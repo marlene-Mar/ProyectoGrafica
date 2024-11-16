@@ -53,6 +53,7 @@ bool keys[1024];
 GLfloat lastX = 400, lastY = 300;
 bool firstMouse = true;
 
+//Deltatime
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
@@ -62,6 +63,7 @@ float tiempo; //Variable para caluclar el tiempo de animación
 bool dir = true; //Varirble para verificar el cambio en tiempo
 
 //////////////////////////////////////////////////
+
 
 /////////////////////////////// ANIMACIÓN AVE ///////////////////////////////////
 
@@ -79,12 +81,37 @@ float rotPaj = 0.0f;
 //float avePosY = 1.346f;
 //float avePosZ = 10.143f;
 
+//-----------------------ANIMACION BOY-------------------------------
+
+bool animBoy = false;
+
+glm::vec3 boyPos(-12.768f, 0.913f, -8.331f); // posición inicial del ave  
+
+float cuerpoBoy = 0.0f;
+float pantIzq= 0.0f; 
+float pantDer = 0.0f;
+float piernaIzq = 0.0f;
+float piernaDer = 0.0f;
+float brazoDer = 0.0f;
+float brazoIzq = 0.0f;
+float bicepDer = 0.0f;
+float bicepIzq = 0.0f;
+
+//patineta
+float skate = 0.0f;
+
+
+bool stepBoy = false;
+float rotBoy = 0.0f;
+
+
 //////////////////////////////////////////////////////////
 
 /////////////////////// FRAMES ///////////////////////////
 
-//Variables para los KeyFrames 
+//Variables para las animaciones por KeyFrames 
 
+//--------------------AVE-------------------------------
 float rotPajX = 0; //Variable para rotación
 
 /*Variables de posición */
@@ -95,26 +122,46 @@ float avePosX = -3.411f;
 float avePosY = 1.346f;
 float avePosZ = 10.143f;
 
-#define MAX_FRAMES 15 //Cuadros permitidos para grabar
+//--------------------BOY-------------------------------
+float rotBoyX = 0; //Variable para rotación
+
+float boyPosX = -12.768f;
+float boyPosY = 0.913f;
+float boyPosZ = -8.331f;
+
+//patineta
+
+float sktPosX = -12.788f; 
+float sktPosY = 0.118f;    
+float sktPosZ = -7.11f;    
+
+
+#define MAX_FRAMES 50 //Cuadros permitidos para grabar
 int i_max_steps = 190;
 int i_curr_steps = 0; // linea de tiempo que vamos a utilizar
 
 //variables que controlan al modelo
 typedef struct _frame {
 
-    //rotación del perrito 
+    //rotación del ave
     float rotPaj;
     float rotPajInc;
 
-    //posiicon del perrito
+    //rotacion del niño
+    float rotBoy;
+    float rotBoyInc;
+
+    //posicion del ave
     float avePosX;
     float avePosY;
     float avePosZ;
+
 
     float incX; //cambio que hay desde un keyframe a otro //incremento que hay en la línea de tiempo. 
     float incY;
     float incZ;
 
+    //-----------------------AVE---------------------------
 
     // ------------------------- CUERPO ----------------*
     float cuerpo;
@@ -138,12 +185,66 @@ typedef struct _frame {
     float rotPajX; //////////// rotación en x 
     float rotPajXInc;
 
+
+    //-----------------------BOY----------------------------
+   
+
+
+    //Variables rotación niño
+    float rotBoyX; //////////// rotación en x 
+    float rotBoyXInc;
+
 }FRAME;
 
 FRAME KeyFrame[MAX_FRAMES];
 int FrameIndex = 0;			//introducir datos
 bool play = false; //indicador de si se reproduce o no la animación
 int playIndex = 0; //indica en que paso de la animación se encuentra el modelo 
+
+
+//Frame BOY
+typedef struct _frameBoy {
+    float incX; //cambio que hay desde un keyframe a otro //incremento que hay en la línea de tiempo. 
+    float incY;
+    float incZ;
+
+    float boyPosX, boyPosY, boyPosZ;
+    float sktPosX, sktPosY, sktPosZ;
+    float rotBoy;
+    float rotBoyInc;
+    float rotBoyX;
+    float rotBoyXInc;
+    float cuerpoBoy;
+    float cuerpoBoyInc;
+    float pantIzq;
+    float pantIzqInc;
+    float pantDer;
+    float pantDerInc;
+    float piernaDer;
+    float piernaDerInc;
+    float piernaIzq;
+    float piernaIzqInc;
+    float brazoDer;
+    float brazoDerInc;
+    float brazoIzq;
+    float brazoIzqInc;
+    float bicepDer;
+    float bicepDerInc;
+    float bicepIzq;
+    float bicepIzqInc;
+
+
+} FRAME_BOY;
+
+#define MAX_FRAMES_BOY 50
+FRAME_BOY KeyFrameBoy[MAX_FRAMES_BOY];
+int FrameIndexBoy = 0; // Índice de KeyFrames del niño
+int playIndexBoy = 0;  // Índice de reproducción para el niño
+bool playBoy = false;  // Bandera para controlar la animación del niño
+int i_curr_steps_boy = 0; // Pasos actuales en la interpolación del niño
+
+
+
 
 
 //FUnción que guarda toda esa función //GUARDA LOS KEYFRAMES
@@ -171,7 +272,8 @@ void saveAnimation(const char* filename = "animKeyF.txt") {
     std::cout << "Animación guardada" << std::endl;
 }
 
-// Función para cargar los KeyFrames
+
+// Función para cargar los KeyFrames ---AVE
 void obtenerAnimation(const char* filename = "animKeyF.txt") {
     std::ifstream file(filename);
     if (!file.is_open()) {
@@ -181,7 +283,8 @@ void obtenerAnimation(const char* filename = "animKeyF.txt") {
 
     FrameIndex = 0;
     while (FrameIndex < MAX_FRAMES &&
-        file >> KeyFrame[FrameIndex].avePosX
+        file
+        >> KeyFrame[FrameIndex].avePosX
         >> KeyFrame[FrameIndex].avePosY
         >> KeyFrame[FrameIndex].avePosZ
         >> KeyFrame[FrameIndex].rotPaj
@@ -189,7 +292,7 @@ void obtenerAnimation(const char* filename = "animKeyF.txt") {
         >> KeyFrame[FrameIndex].cola
         >> KeyFrame[FrameIndex].alaDer
         >> KeyFrame[FrameIndex].alaIzq
-        >> KeyFrame[FrameIndex].rotPajX) {
+        >> KeyFrame[FrameIndex].rotPajX){
         FrameIndex++;
     }
 }
@@ -219,17 +322,125 @@ void saveFrame(void)
     KeyFrame[FrameIndex].alaDer = alaDer;
     KeyFrame[FrameIndex].alaIzq = alaIzq;
 
+
     //imprimir el frame para observar los datos que nos da, estos valores son los que se van a guardar en el archivo 
 
     FrameIndex++;
+
+
+}
+
+//////////////////////BOY KEYFRAMES///////////////////////////////////////////
+
+// Función para guardar los datos de un archivo de texto --BOY
+void saveAnimation2(const char* filename = "animBoy.txt") {
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error al abrir el archivo para guardar." << std::endl;
+        return;
+    }
+
+    for (int i = 0; i < FrameIndexBoy; i++) {
+        file
+            << KeyFrameBoy[i].boyPosX << " "
+            << KeyFrameBoy[i].boyPosY << " "
+            << KeyFrameBoy[i].boyPosZ << " "
+            << KeyFrameBoy[i].sktPosX << " "
+            << KeyFrameBoy[i].sktPosY << " "
+            << KeyFrameBoy[i].sktPosZ << " "
+            << KeyFrameBoy[i].rotBoy << " "
+            << KeyFrameBoy[i].cuerpoBoy << " "
+            << KeyFrameBoy[i].pantIzq << " "
+            << KeyFrameBoy[i].pantDer << " "
+            << KeyFrameBoy[i].piernaIzq << " "
+            << KeyFrameBoy[i].piernaDer << " "
+            << KeyFrameBoy[i].brazoIzq << " "
+            << KeyFrameBoy[i].brazoDer << " "
+            << KeyFrameBoy[i].bicepIzq << " "
+            << KeyFrameBoy[i].bicepDer << " "
+            << KeyFrameBoy[i].rotBoyX << "\n";
+    }
+    file.close();
+    std::cout << "Animación boy guardada" << std::endl;
+
+}
+
+
+//Función para cargar los KeyFrames ---BOY
+void obtenerAnimation2(const char* filename = "animBoy.txt") {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error al abrir el archivo para cargar." << std::endl;
+        return;
+    }
+
+    FrameIndexBoy = 0;
+    while (FrameIndexBoy < MAX_FRAMES_BOY &&
+        file
+        >> KeyFrameBoy[FrameIndexBoy].boyPosX
+        >> KeyFrameBoy[FrameIndexBoy].boyPosY
+        >> KeyFrameBoy[FrameIndexBoy].boyPosZ
+        >> KeyFrameBoy[FrameIndexBoy].sktPosX
+        >> KeyFrameBoy[FrameIndexBoy].sktPosY
+        >> KeyFrameBoy[FrameIndexBoy].sktPosZ
+        >> KeyFrameBoy[FrameIndexBoy].rotBoy
+        >> KeyFrameBoy[FrameIndexBoy].cuerpoBoy
+        >> KeyFrameBoy[FrameIndexBoy].pantIzq
+        >> KeyFrameBoy[FrameIndexBoy].pantDer
+        >> KeyFrameBoy[FrameIndexBoy].piernaIzq
+        >> KeyFrameBoy[FrameIndexBoy].piernaDer
+        >> KeyFrameBoy[FrameIndexBoy].brazoIzq
+        >> KeyFrameBoy[FrameIndexBoy].brazoDer
+        >> KeyFrameBoy[FrameIndexBoy].bicepIzq
+        >> KeyFrameBoy[FrameIndexBoy].bicepDer
+        >> KeyFrameBoy[FrameIndexBoy].rotBoyX) {
+        FrameIndexBoy++;
+    }
 }
 
 
 
+void saveFrameBoy(void)
+{
+
+    printf("frameindex %d\n", FrameIndexBoy);
+
+
+    //-----------------------------BOY-------------------------------
+    KeyFrameBoy[FrameIndexBoy].boyPosX = boyPosX;
+    KeyFrameBoy[FrameIndexBoy].boyPosY = boyPosY;
+    KeyFrameBoy[FrameIndexBoy].boyPosZ = boyPosZ;
+
+    //patineta
+    KeyFrameBoy[FrameIndexBoy].sktPosX = sktPosX;
+    KeyFrameBoy[FrameIndexBoy].sktPosY = sktPosY;
+    KeyFrameBoy[FrameIndexBoy].sktPosZ = sktPosZ;
+
+    //partes del cuerpo
+    KeyFrameBoy[FrameIndexBoy].rotBoy = rotBoy;
+    KeyFrameBoy[FrameIndexBoy].rotBoyX = rotBoyX;
+
+    KeyFrameBoy[FrameIndexBoy].cuerpoBoy = cuerpoBoy;
+    KeyFrameBoy[FrameIndexBoy].pantIzq = pantIzq;
+    KeyFrameBoy[FrameIndexBoy].pantDer = pantDer;
+    KeyFrameBoy[FrameIndexBoy].piernaIzq = piernaIzq;
+    KeyFrameBoy[FrameIndexBoy].piernaDer = piernaDer;
+    KeyFrameBoy[FrameIndexBoy].brazoIzq = brazoIzq;
+    KeyFrameBoy[FrameIndexBoy].brazoDer = brazoDer;
+    KeyFrameBoy[FrameIndexBoy].bicepIzq = bicepIzq;
+    KeyFrameBoy[FrameIndexBoy].bicepDer = bicepDer;
+
+
+    //imprimir el frame para observar los datos que nos da, estos valores son los que se van a guardar en el archivo 
+
+    FrameIndexBoy++;
+
+}
 
 //Función que reinicia a la posicióninicial 
 void resetElements(void)
 {
+    //--------------------------AVE---------------------
     avePosX = KeyFrame[0].avePosX;
     avePosY = KeyFrame[0].avePosY;
     avePosZ = KeyFrame[0].avePosZ;
@@ -247,6 +458,40 @@ void resetElements(void)
     //Alas 
     alaDer = KeyFrame[0].alaDer;
     alaIzq = KeyFrame[0].alaIzq;
+
+
+}
+
+//Función que reinicia a la posicióninicial 
+void resetElementsBoy(void)
+{
+    //--------------------------BOY--------------------
+
+    boyPosX = KeyFrameBoy[0].boyPosX;
+    boyPosY = KeyFrameBoy[0].boyPosY;
+    boyPosZ = KeyFrameBoy[0].boyPosZ;
+
+    //patineta
+    sktPosX = KeyFrameBoy[0].sktPosX;
+    sktPosY = KeyFrameBoy[0].sktPosY;
+    sktPosZ = KeyFrameBoy[0].sktPosZ;
+
+    //Partes del cuerpo
+
+    //rotaciones
+    rotBoy = KeyFrameBoy[0].rotBoy;
+    rotBoyX = KeyFrameBoy[0].rotBoyX;
+
+    cuerpoBoy = KeyFrameBoy[0].cuerpoBoy;
+    pantDer = KeyFrameBoy[0].pantDer;
+    pantIzq = KeyFrameBoy[0].pantIzq;
+    piernaIzq = KeyFrameBoy[0].piernaIzq;
+    piernaDer = KeyFrameBoy[0].piernaDer;
+    brazoIzq = KeyFrameBoy[0].brazoIzq;
+    brazoDer = KeyFrameBoy[0].brazoDer;
+    bicepIzq = KeyFrameBoy[0].bicepIzq;
+    bicepDer = KeyFrameBoy[0].bicepDer;
+
 }
 
 //diferencia en las variables (rotaciones y posiciones) //REPRODUCE LOS KEFRAMES
@@ -275,9 +520,51 @@ void interpolation(void)
     KeyFrame[playIndex].alaIzqInc = (KeyFrame[playIndex + 1].alaIzq - KeyFrame[playIndex].alaIzq) / i_max_steps;
 
 
+}
+
+void interpolationBoy(void)
+{
+    //------------------------------BOY---------------------------
+    KeyFrameBoy[playIndexBoy].incX = (KeyFrameBoy[playIndexBoy + 1].boyPosX - KeyFrameBoy[playIndexBoy].boyPosX) / i_max_steps;
+    KeyFrameBoy[playIndexBoy].incY = (KeyFrameBoy[playIndexBoy + 1].boyPosY - KeyFrameBoy[playIndexBoy].boyPosY) / i_max_steps;
+    KeyFrameBoy[playIndexBoy].incZ = (KeyFrameBoy[playIndexBoy + 1].boyPosZ - KeyFrameBoy[playIndexBoy].boyPosZ) / i_max_steps;
+
+    KeyFrameBoy[playIndexBoy].incX = (KeyFrameBoy[playIndexBoy + 1].sktPosX - KeyFrameBoy[playIndexBoy].sktPosX) / i_max_steps;
+    KeyFrameBoy[playIndexBoy].incY = (KeyFrameBoy[playIndexBoy + 1].sktPosY - KeyFrameBoy[playIndexBoy].sktPosY) / i_max_steps;
+    KeyFrameBoy[playIndexBoy].incZ = (KeyFrameBoy[playIndexBoy + 1].sktPosZ - KeyFrameBoy[playIndexBoy].sktPosZ) / i_max_steps;
+
+    KeyFrameBoy[playIndexBoy].rotBoyInc = (KeyFrameBoy[playIndexBoy + 1].rotBoy - KeyFrameBoy[playIndexBoy].rotBoy) / i_max_steps;
+    KeyFrameBoy[playIndexBoy].rotBoyXInc = (KeyFrameBoy[playIndexBoy + 1].rotBoyX - KeyFrameBoy[playIndexBoy].rotBoyX) / i_max_steps;
+
+    KeyFrameBoy[playIndexBoy].cuerpoBoyInc = (KeyFrameBoy[playIndexBoy + 1].cuerpoBoy - KeyFrameBoy[playIndexBoy].cuerpoBoy) / i_max_steps;
+    KeyFrameBoy[playIndexBoy].pantDerInc = (KeyFrameBoy[playIndexBoy + 1].pantDer - KeyFrameBoy[playIndexBoy].pantDer) / i_max_steps;
+    KeyFrameBoy[playIndexBoy].pantIzqInc = (KeyFrameBoy[playIndexBoy + 1].pantIzq - KeyFrameBoy[playIndexBoy].pantIzq) / i_max_steps;
+    KeyFrameBoy[playIndexBoy].piernaDerInc = (KeyFrameBoy[playIndexBoy + 1].piernaDer - KeyFrameBoy[playIndexBoy].piernaDer) / i_max_steps;
+    KeyFrameBoy[playIndexBoy].piernaIzqInc = (KeyFrameBoy[playIndexBoy + 1].piernaIzq - KeyFrameBoy[playIndexBoy].piernaIzq) / i_max_steps;
+    KeyFrameBoy[playIndexBoy].brazoDerInc = (KeyFrameBoy[playIndexBoy + 1].brazoDer - KeyFrameBoy[playIndexBoy].brazoDer) / i_max_steps;
+    KeyFrameBoy[playIndexBoy].brazoIzqInc = (KeyFrameBoy[playIndexBoy + 1].brazoIzq - KeyFrameBoy[playIndexBoy].brazoIzq) / i_max_steps;
+    KeyFrameBoy[playIndexBoy].bicepDerInc = (KeyFrameBoy[playIndexBoy + 1].bicepDer - KeyFrameBoy[playIndexBoy].bicepDer) / i_max_steps;
+    KeyFrameBoy[playIndexBoy].bicepIzqInc = (KeyFrameBoy[playIndexBoy + 1].bicepIzq - KeyFrameBoy[playIndexBoy].bicepIzq) / i_max_steps;
 
 }
 
+
+
+// Función para imprimir el contenido del archivo animBoy.txt en consola
+void PrintAnimationBoy(const char* filename = "animBoy.txt") {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error al abrir el archivo para imprimir." << std::endl;
+        return;
+    }
+
+    std::string line;
+    std::cout << "Contenido del archivo " << filename << ":\n";
+    while (std::getline(file, line)) {
+        std::cout << line << std::endl;
+    }
+    file.close();
+}
 //////////////////////////////////// FIN FRAMES ///////////////////////////////
 
 
@@ -293,7 +580,7 @@ glm::vec3 pointLightPositions[] = {
 
 glm::vec3 Light1 = glm::vec3(0);
 
-////////////////7/ Variables para la animación de la pelota//////////////////
+///////////////// Variables para la animación de la pelota//////////////////
 glm::vec3 pelotaPos = glm::vec3(0.0f, 1.0f, 0.0f); // Posición inicial
 float tiempoAnimacion = 0.0f; // Tiempo para la animación
 bool animacionActiva = false; // Control de la animación
@@ -401,12 +688,29 @@ int main()
     Model alaDerPaj((char*)"Models/pajaro/alaDer.obj");
     Model alaIzqPaj((char*)"Models/pajaro/alaIzq.obj");
 
+
+    //------------------- MODELOS BOY
+    Model bicepD((char*)"Models/boy/bicepDER.obj");
+    Model bicepI((char*)"Models/boy/bicepIZQ.obj");
+    Model brazoD((char*)"Models/boy/brazoDER.obj");
+    Model brazoI((char*)"Models/boy/brazoIZQ.obj");
+    Model piernaD((char*)"Models/boy/piernaDER.obj");
+    Model piernaI((char*)"Models/boy/piernaIZQ.obj");
+    Model pantD((char*)"Models/boy/pantDER.obj");
+    Model pantI((char*)"Models/boy/pantIZQ.obj");
+    Model body((char*)"Models/boy/cuerpo.obj");
+    Model skate((char*)"Models/boy/ball.obj");
+
+
+
     ////////////////////////// KEYFRAMES //////////////////////////////////
 
     /*Iniciarlizar todos los frames en 0 */
     //KeyFrames
     for (int i = 0; i < MAX_FRAMES; i++)
     {
+
+        //--------AVE-----------
         KeyFrame[i].avePosX = 0;
         KeyFrame[i].avePosY = 0;
         KeyFrame[i].avePosZ = 0;
@@ -435,8 +739,46 @@ int main()
         KeyFrame[i].alaIzq = 0;
         KeyFrame[i].alaIzqInc = 0;
 
+    }
+
+    for (int i = 0; i < MAX_FRAMES_BOY; i++)
+    {
+        //----------BOY------------
+
+        KeyFrameBoy[i].boyPosX = 0;
+        KeyFrameBoy[i].boyPosY = 0;
+        KeyFrameBoy[i].boyPosZ = 0;
+
+        KeyFrameBoy[i].sktPosX = 0;
+        KeyFrameBoy[i].sktPosY = 0;
+        KeyFrameBoy[i].sktPosZ = 0;
+
+        KeyFrameBoy[i].rotBoy = 0;
+        KeyFrameBoy[i].rotBoyInc = 0;
+        KeyFrameBoy[i].rotBoyX = 0;
+        KeyFrameBoy[i].rotBoyXInc = 0;
+
+        KeyFrameBoy[i].cuerpoBoy = 0;
+        KeyFrameBoy[i].cuerpoBoyInc = 0;
+        KeyFrameBoy[i].bicepDer = 0;
+        KeyFrameBoy[i].bicepDerInc = 0;
+        KeyFrameBoy[i].bicepIzq = 0;
+        KeyFrameBoy[i].bicepIzqInc = 0;
+        KeyFrameBoy[i].brazoDer = 0;
+        KeyFrameBoy[i].brazoDerInc = 0;
+        KeyFrameBoy[i].brazoIzq = 0;
+        KeyFrameBoy[i].brazoIzqInc = 0;
+        KeyFrameBoy[i].piernaDer = 0;
+        KeyFrameBoy[i].piernaDerInc = 0;
+        KeyFrameBoy[i].piernaIzq = 0;
+        KeyFrameBoy[i].piernaIzqInc = 0;
+        KeyFrameBoy[i].pantDer = 0;
+        KeyFrameBoy[i].pantDerInc = 0;
+        KeyFrameBoy[i].pantIzq = 0;
+        KeyFrameBoy[i].pantIzqInc = 0;
 
     }
+
 
     /////////////////////////////////////////////////////////////////////
 
@@ -601,11 +943,13 @@ int main()
         // Clear the colorbuffer
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-       
+
         // OpenGL options
         glEnable(GL_DEPTH_TEST);
 
         glm::mat4 modelTemp = glm::mat4(1.0f); // Matriz Temporal 
+        glm::mat4 modelTemp2 = glm::mat4(1.0f); // Matriz Temporal 
+        glm::mat4 modelTemp3 = glm::mat4(1.0f); // Matriz Temporal 
 
         lightingShader.Use();
 
@@ -646,7 +990,7 @@ int main()
         glUniform1f(glGetUniformLocation(lightingShader.Program, "spotLight.cutOff"), glm::cos(glm::radians(0.1f)));
         glUniform1f(glGetUniformLocation(lightingShader.Program, "spotLight.outerCutOff"), glm::cos(glm::radians(0.1f)));
 
-       
+
 
         // Set material properties
         glUniform1f(glGetUniformLocation(lightingShader.Program, "material.shininess"), 5.0f);
@@ -706,6 +1050,87 @@ int main()
 
         glm::mat4 model(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
+        //--------------------------------ANIMACIÓN NIÑO 1---------------------------------
+
+        glm::mat4 modelBoy(1);
+
+        //Body
+        modelTemp2 = modelBoy = glm::translate(modelBoy, glm::vec3(boyPosX, boyPosY, boyPosZ));
+        modelTemp2 = modelBoy = glm::rotate(modelBoy, glm::radians(rotBoy), glm::vec3(0.0f, 0.0f, 1.0f));
+        modelTemp2 = modelBoy = glm::rotate(modelBoy, glm::radians(rotBoyX), glm::vec3(1.0f, 0.0f, 0.0f));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelBoy));
+        body.Draw(lightingShader);
+
+        //BRAZOS
+        
+        //Bíceps Izquierdo 
+        glm::mat4 modelBicepIzq = modelTemp2;
+        modelBicepIzq = glm::translate(modelBicepIzq, glm::vec3(-12.634f + 12.768f, 1.006f - 0.913f, -8.383f + 8.352f));
+        modelBicepIzq = glm::rotate(modelBicepIzq, glm::radians(bicepIzq), glm::vec3(1.0f, 0.0f, 0.0f));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelBicepIzq));
+        bicepI.Draw(lightingShader); // Dibuja el bíceps izquierdo
+
+        //Brazo Izquierdo
+        glm::mat4 modelBrazoIzq = modelBicepIzq;
+        modelBrazoIzq = glm::translate(modelBrazoIzq, glm::vec3(-12.591f + 12.634, 0.844f - 1.006f, -8.389f + 8.383f));
+        modelBrazoIzq = glm::rotate(modelBrazoIzq, glm::radians(brazoIzq), glm::vec3(1.0f, 0.0f, 0.0f));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelBrazoIzq));
+        brazoI.Draw(lightingShader); // Dibuja el brazo izquierdo
+
+        // Bíceps Derecho
+        glm::mat4 modelBicepDer = modelTemp2;
+        modelBicepDer = glm::translate(modelBicepDer, glm::vec3(-12.88f + 12.768f, 1.006f - 0.913f, -8.383f + 8.352f));
+        modelBicepDer = glm::rotate(modelBicepDer, glm::radians(bicepDer), glm::vec3(1.0f, 0.0f, 0.0f));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelBicepDer));
+        bicepD.Draw(lightingShader); // Dibuja el bíceps derecho
+
+        // Brazo Derecho
+        glm::mat4 modelBrazoDer = modelBicepDer;
+        modelBrazoDer = glm::translate(modelBrazoDer, glm::vec3(-12.946f + 12.88, 0.859f - 1.006f, -8.408f + 8.383f));
+        modelBrazoDer = glm::rotate(modelBrazoDer, glm::radians(brazoDer), glm::vec3(1.0f, 0.0f, 0.0f));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelBrazoDer));
+        brazoD.Draw(lightingShader); // Dibuja el brazo derecho
+
+        //PIERNAS
+
+        // Pierna Izquierda
+        glm::mat4 modelPiernaIzq = modelTemp2;
+        modelPiernaIzq = glm::translate(modelPiernaIzq, glm::vec3(-12.691f + 12.768f, 0.595f - 0.913f, -8.352f + 8.352f));
+        modelPiernaIzq = glm::rotate(modelPiernaIzq, glm::radians(piernaIzq), glm::vec3(1.0f, 0.0f, 0.0f));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelPiernaIzq));
+        piernaI.Draw(lightingShader); // Dibuja la pierna izquierda
+
+        //Pantorrilla Izquierda
+        glm::mat4 modelPantIzq = modelPiernaIzq; // Aplica la transformación del cuerpo
+        modelPantIzq = glm::translate(modelPantIzq, glm::vec3(-12.663f + 12.691f, 0.274f - 0.595f, -8.413f + 8.352f));
+        modelPantIzq = glm::rotate(modelPantIzq, glm::radians(pantIzq), glm::vec3(1.0f, 0.0f, 0.0f));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelPantIzq));
+        pantI.Draw(lightingShader); // Dibuja la pantorrilla izquierda
+
+        // Pierna Derecha
+        glm::mat4 modelPiernaDer = modelTemp2;
+        modelPiernaDer = glm::translate(modelPiernaDer, glm::vec3(-12.827f + 12.768f, 0.592f - 0.913f, -8.348f + 8.352f));
+        modelPiernaDer = glm::rotate(modelPiernaDer, glm::radians(piernaDer), glm::vec3(1.0f, 0.0f, 0.0f));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelPiernaDer));
+        piernaD.Draw(lightingShader); // Dibuja la pierna derecha
+
+        // Pantorrilla Derecha
+        glm::mat4 modelPantDer = modelPiernaDer;
+        modelPantDer = glm::translate(modelPantDer, glm::vec3(-12.872f + 12.827f, 0.27f - 0.592f, -8.405f + 8.348f));
+        modelPantDer = glm::rotate(modelPantDer, glm::radians(pantDer), glm::vec3(1.0f, 0.0f, 0.0f));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelPantDer));
+        pantD.Draw(lightingShader); // Dibuja la pantorrilla derecha
+
+
+        //Patineta 
+        glm::mat4 modelPatineta = modelTemp3; 
+        modelTemp3 = modelPatineta = glm::translate(modelPatineta, glm::vec3(sktPosX + 12.768f, sktPosY, sktPosZ + 8.352f));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelPatineta));
+        skate.Draw(lightingShader);
+
+
+        //----------------------------------------------------------------------------------
         
         ////////////// PLANO DEL SUELO ///////////////
         glm::mat4 modelSuelo(1);
@@ -738,7 +1163,7 @@ int main()
         glm::mat4 modelJuegos(1);
         glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelJuegos));
         areaJuegos.Draw(lightingShader);
-     
+
         glm::mat4 modelColumpio(1);
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelColumpio));
         columpio.Draw(lightingShader);
@@ -885,34 +1310,34 @@ int main()
 
 
 // Moves/alters the camera positions based on user input
-void DoMovement( )
+void DoMovement()
 {
     // Camera controls
-    if ( keys[GLFW_KEY_W] || keys[GLFW_KEY_UP] )
+    if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP])
     {
-        camera.ProcessKeyboard( FORWARD, deltaTime );
+        camera.ProcessKeyboard(FORWARD, deltaTime);
     }
-    
-    if ( keys[GLFW_KEY_S] || keys[GLFW_KEY_DOWN] )
+
+    if (keys[GLFW_KEY_S] || keys[GLFW_KEY_DOWN])
     {
-        camera.ProcessKeyboard( BACKWARD, deltaTime );
+        camera.ProcessKeyboard(BACKWARD, deltaTime);
     }
-    
-    if ( keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT] )
+
+    if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT])
     {
-        camera.ProcessKeyboard( LEFT, deltaTime );
+        camera.ProcessKeyboard(LEFT, deltaTime);
     }
-    
-    if ( keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT] )
+
+    if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT])
     {
-        camera.ProcessKeyboard( RIGHT, deltaTime );
+        camera.ProcessKeyboard(RIGHT, deltaTime);
     }
 
     ///////////////////////////////////////////////////// TECLAS PARA EL AVE ////////////////////////////////
 
     //---------------------------------------- CUERPO -------------*
 
-    //Movimiento en X (arriba abajo )
+    /*//Movimiento en X (arriba abajo )
     if (keys[GLFW_KEY_Z])
     {
         rotPajX += 0.2f;
@@ -989,10 +1414,50 @@ void DoMovement( )
     {
         cola -= 0.2f;
     }
+    */
 
     /////////////////////////////////////////////////////////////////////////////////////
 
-   
+    //---------------------------BOY----------------------
+
+    //CUERPO
+    if (keys[GLFW_KEY_Z])   boyPosZ += 0.01f; //enfrente
+    if (keys[GLFW_KEY_X])   boyPosZ -= 0.01f; //atras
+
+    if (keys[GLFW_KEY_C])   boyPosX += 0.001f; //enfrente
+    if (keys[GLFW_KEY_V])   boyPosX -= 0.001f; //atras
+
+    //BRAZOS
+    if (keys[GLFW_KEY_B])   brazoIzq += 0.1f; //atras
+    if (keys[GLFW_KEY_N])   brazoIzq -= 0.1f; //adelante
+
+    if (keys[GLFW_KEY_M])   brazoDer += 0.1f; //atras
+    if (keys[GLFW_KEY_J])   brazoDer -= 0.1f; //adelante
+
+    //BICEP
+    if (keys[GLFW_KEY_F])   bicepIzq += 0.1f; //atras
+    if (keys[GLFW_KEY_4])   bicepIzq -= 0.1f; //adelante
+
+    if (keys[GLFW_KEY_E])   bicepDer += 0.1f; //atras
+    if (keys[GLFW_KEY_6])   bicepDer -= 0.1f; //delante
+
+    //PIERNAS
+    if (keys[GLFW_KEY_T])   piernaDer += 0.1f; //atras
+    if (keys[GLFW_KEY_Y])   piernaDer -= 0.1f; //adelante
+
+    if (keys[GLFW_KEY_U])   piernaIzq += 0.1f; //atras
+    if (keys[GLFW_KEY_I])   piernaIzq -= 0.1f; //adelante
+
+    //PANTORRILLA
+    if (keys[GLFW_KEY_O])   pantDer += 0.1f; //atras
+    if (keys[GLFW_KEY_P])   pantDer -= 0.1f; //adelante
+
+    if (keys[GLFW_KEY_0])   pantIzq += 0.1f; //atras
+    if (keys[GLFW_KEY_9])   pantIzq -= 0.1f; //adelante
+
+    //PANTINETA
+    if (keys[GLFW_KEY_8])   sktPosZ += 0.1f; //enfrentE
+    if (keys[GLFW_KEY_7])   sktPosX -= 0.1f; //de lado a lado
 }
 
 void BallAnimation()
@@ -1030,7 +1495,25 @@ void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mod
         {
             play = false;
         }
+    }
 
+    if (keys[GLFW_KEY_L])
+    {
+        if (playBoy == false && (FrameIndexBoy > 1))
+        {
+
+            resetElementsBoy();
+            //First Interpolation				
+            interpolationBoy();
+            //aqui ya se esta reproduciendo la animación 
+            playBoy = true;
+            playIndexBoy = 0;
+            i_curr_steps_boy = 0;
+        }
+        else
+        {
+            playBoy = false;
+        }
     }
 
     if (keys[GLFW_KEY_K])
@@ -1040,17 +1523,36 @@ void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mod
             saveFrame(); //guarda el estado actual de los keyframes 
         }
 
+        if (FrameIndexBoy < MAX_FRAMES_BOY)
+        {
+            saveFrameBoy(); //guarda el estado actual de los keyframes 
+        }
     }
 
-    //IF para guardar los keyFrames en el archhivo
+//--------------------------ANIMACIONES POR KEYFRAMES--------------------------------------
+    //IF para guardar los keyFrames en el archivo
     if (key == GLFW_KEY_G) {
-        saveAnimation();  // Guarda la animación en "Animacion.txt"
+        saveAnimation(); // Guarda la animación en "AnimKey.txt"
     }
 
     if (key == GLFW_KEY_1 && GLFW_PRESS == action) {
 
         resetElements();  // Resetear los elementos a los primeros keyframes cargados
         obtenerAnimation(); //Carga la animación por medio del archivo previamente guardado
+    }
+
+    //ANIMACION 2 - BOY 
+    if (key == GLFW_KEY_Q) {
+        saveAnimation2(); // Guarda la animación en "AnimBoy.txt"
+    }
+
+    if (key == GLFW_KEY_3 && GLFW_PRESS == action) {
+
+        //resetElementsBoy();  // Resetear los elementos a los primeros keyframes cargados
+        obtenerAnimation2(); //Carga la animación del niño por medio del archivo previamente guardado
+        PrintAnimationBoy(); //Imprime en terminar los valores del archivo
+
+
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1081,11 +1583,7 @@ void KeyCallback( GLFWwindow *window, int key, int scancode, int action, int mod
 }
 
 void Animation() {
-    //if (animAve)
-    //{
-    //    rotPaj -= 0.6f;
-    //    //printf("%f", rotBall);
-    //}
+
         /////////////////////////////////////////////////// KEYFRAMES ///////////////////////////////////////////////////////////
     if (play)
     {
@@ -1107,6 +1605,7 @@ void Animation() {
         }
         else
         {
+            //-----------------AVE----------------------
             //Draw animation
             avePosX += KeyFrame[playIndex].incX;
             avePosY += KeyFrame[playIndex].incY;
@@ -1126,15 +1625,60 @@ void Animation() {
             alaDer += KeyFrame[playIndex].alaDerInc;
             alaIzq += KeyFrame[playIndex].alaIzqInc;
 
-
             i_curr_steps++;
+
         }
+    }
 
+    if (playBoy) {
+        if (i_curr_steps_boy >= i_max_steps) //end of animation between frames?
+        {
+            playIndexBoy++;
+            if (playIndexBoy > FrameIndexBoy - 2)	//end of total animation?
+            {
+                printf("termina anim\n");
+                playIndexBoy = 0;
+                playBoy = false;
+            }
+            else //Next frame interpolations
+            {
+                i_curr_steps_boy = 0; //Reset counter
+                //Interpolation
+                interpolationBoy();
+            }
+        }
+        else
+        {
+            //-----------------BOY----------------------
 
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            boyPosX += KeyFrameBoy[playIndexBoy].incX;
+            boyPosY += KeyFrameBoy[playIndexBoy].incY;
+            boyPosZ += KeyFrameBoy[playIndexBoy].incZ;
+
+            sktPosX += KeyFrameBoy[playIndexBoy].incX;
+            sktPosY += KeyFrameBoy[playIndexBoy].incY;
+            sktPosZ += KeyFrameBoy[playIndexBoy].incZ;
+
+            rotBoy += KeyFrameBoy[playIndexBoy].rotBoyInc;
+            rotBoyX += KeyFrameBoy[playIndexBoy].rotBoyXInc;
+
+            cuerpoBoy += KeyFrameBoy[playIndexBoy].cuerpoBoyInc;
+            pantIzq += KeyFrameBoy[playIndexBoy].pantIzqInc;
+            pantDer += KeyFrameBoy[playIndexBoy].pantDerInc;
+            piernaIzq += KeyFrameBoy[playIndexBoy].piernaIzqInc;
+            piernaDer += KeyFrameBoy[playIndexBoy].piernaDerInc;
+            brazoIzq += KeyFrameBoy[playIndexBoy].brazoDerInc;
+            brazoDer += KeyFrameBoy[playIndexBoy].brazoIzqInc;
+            bicepIzq += KeyFrameBoy[playIndexBoy].bicepIzqInc;
+            bicepDer += KeyFrameBoy[playIndexBoy].bicepDerInc;
+
+            i_curr_steps_boy++;
+
+        }
     }
 
 }
+
 
 
 void MouseCallback( GLFWwindow *window, double xPos, double yPos )
